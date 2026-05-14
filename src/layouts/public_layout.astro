@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/navbar.astro';
+import InquiryModal from '../components/inquiry_modal.jsx';
+import { siteConfig } from '../config/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const { 
+  title, 
+  description = siteConfig.seo.defaultDescription,
+  ogImage = siteConfig.seo.ogImage 
+} = Astro.props;
+
+const displayTitle = title 
+  ? `${title} | ${siteConfig.brand.name} ${siteConfig.brand.suffix}`
+  : siteConfig.seo.defaultTitle;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    
+    <!-- Primary Meta Tags -->
+    <title>{displayTitle}</title>
+    <meta name="title" content={displayTitle} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={siteConfig.seo.keywords.join(', ')} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={displayTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-surface">
+    <Navbar />
+    <slot />
+    <InquiryModal client:load />
+  </body>
+</html>

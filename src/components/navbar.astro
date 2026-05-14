@@ -1,0 +1,45 @@
+---
+import { siteConfig } from '../config/site';
+const pathname = new URL(Astro.request.url).pathname;
+const isHome = pathname === "/";
+---
+<nav id="main-nav" class:list={["fixed top-0 w-full z-[100] transition-all duration-300", isHome ? "py-6" : "bg-ink py-4 border-b border-white/10"]}>
+  <div class="container mx-auto px-6 flex justify-between items-center">
+    <!-- Dynamic Logo -->
+    <a href="/" class="text-white text-2xl font-serif tracking-tight group">
+      {siteConfig.brand.name} <span class="font-light opacity-80 group-hover:opacity-100 transition-opacity">{siteConfig.brand.suffix}</span>
+    </a>
+
+    <!-- Dynamic Links -->
+    <div class="hidden md:flex items-center gap-8">
+      {siteConfig.nav.map((link) => (
+        <a href={link.href} class="text-white/90 hover:text-white text-sm font-medium tracking-wide transition-colors">
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <div class="flex items-center gap-4">
+      <button class="bg-coral hover:bg-coral-dark text-white px-5 py-2 rounded-full text-xs font-bold shadow-lg transition-all">
+        INQUIRE NOW
+      </button>
+    </div>
+  </div>
+</nav>
+
+<script define:vars={{ isHome }}>
+  const nav = document.getElementById('main-nav');
+  
+  if (nav && isHome) {
+    // Only apply scroll logic if we are on the Homepage
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.add('bg-ink/95', 'backdrop-blur-lg', 'py-4', 'border-b', 'border-white/10');
+        nav.classList.remove('py-6');
+      } else {
+        nav.classList.remove('bg-ink/95', 'backdrop-blur-lg', 'py-4', 'border-b', 'border-white/10');
+        nav.classList.add('py-6');
+      }
+    });
+  }
+</script>

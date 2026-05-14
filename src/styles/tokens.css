@@ -1,0 +1,35 @@
+
+@layer base {
+  :root {
+    --teal: #1a6b6b;
+    --teal-dark: #124d4d;
+    --teal-pale: #e6f4f4;
+    --coral: #e8562a;
+    --coral-dark: #c94420;
+    --gold: #c9983a;
+    --gold-pale: #fdf6e3;
+
+    --ink: #0d1117;
+    --ink-muted: #4b5563;
+    --surface: #fafaf8;
+    --surface-alt: #f0ede8;
+    --sand: #f5f0e8;
+    --border: #e2ddd7;
+
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-20: 80px;
+    
+    --radius-lg: 12px;
+  }
+
+  body {
+    background-color: var(--surface);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  h1, h2, h3, .display-serif {
+    font-family: 'Cormorant Garamond', serif;
+  }
+}

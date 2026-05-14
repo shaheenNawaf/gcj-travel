@@ -1,0 +1,15 @@
+---
+import AdminLayout from '../../../layouts/admin_layout.astro';
+import PackageForm from '../../../components/admin/package_form.jsx';
+---
+
+<AdminLayout title="New Journey">
+  <div style="margin-bottom: 48px;">
+    <a href="/admin/packages" style="text-decoration: none; color: #1a6b6b; font-size: 12px; font-weight: bold;">&larr; BACK TO CATALOG</a>
+    <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 48px; margin: 16px 0 8px;">Create New Journey</h1>
+    <p style="color: #4b5563;">Add a new destination to your digital magazine.</p>
+  </div>
+
+  <!-- We use a React component for the form to handle the logic easily -->
+  <PackageForm client:load />
+</AdminLayout>

@@ -1,0 +1,58 @@
+---
+import AdminLayout from '../../layouts/admin_layout.astro';
+import { supabase } from '../../lib/supabase_client';
+
+const { data: packages } = await supabase
+  .from('packages')
+  .select('*')
+  .order('created_at', { ascending: false });
+---
+
+<AdminLayout title="Tour Catalog">
+  <div class="flex justify-between items-end mb-12">
+    <div>
+      <h1 class="text-5xl font-serif mb-4">Tour Catalog</h1>
+      <p class="text-ink-muted">Manage the destinations featured in your digital magazine.</p>
+    </div>
+    <a 
+      href="/admin/packages/new" 
+      class="bg-teal text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-teal-dark transition-all shadow-lg"
+    >
+      + Add New Journey
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4">
+    {packages?.map((pkg) => (
+      <div class="bg-white border border-border rounded-2xl p-6 flex items-center gap-6 group hover:border-teal transition-all">
+        <div class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
+          <img src={pkg.image_url} class="w-full h-full object-cover" alt="" />
+        </div>
+        
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-teal bg-teal-pale px-2 py-0.5 rounded">
+              {pkg.region}
+            </span>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+              {pkg.days} Days
+            </span>
+          </div>
+          <h3 class="text-xl font-serif text-ink">{pkg.title}</h3>
+          <p class="text-sm font-mono text-ink-muted">₱{pkg.price.toLocaleString()}</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button class="p-2 hover:bg-surface rounded-lg text-ink-muted hover:text-teal transition-colors">
+            <!-- Edit Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+          </button>
+          <button class="p-2 hover:bg-red-50 rounded-lg text-ink-muted hover:text-red-600 transition-colors">
+            <!-- Delete Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+</AdminLayout>

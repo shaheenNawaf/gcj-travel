@@ -1,0 +1,78 @@
+---
+import AdminLayout from '../../layouts/admin_layout.astro';
+import { supabase } from '../../lib/supabase_client';
+
+const { data: inquiries } = await supabase
+  .from('inquiries')
+  .select('*')
+  .order('created_at', { ascending: false });
+
+const newLeads = inquiries?.filter(i => i.status === 'new').length || 0;
+---
+
+<AdminLayout title="Reader Inquiries">
+  <div class="mb-12">
+    <h1 class="text-5xl font-serif mb-4">Inbound Leads</h1>
+    <p class="text-ink-muted max-w-xl">Review and manage requests from your digital magazine. These are high-intent travelers waiting for your response.</p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+    <div class="bg-white p-8 rounded-2xl border border-border shadow-sm">
+      <p class="text-[10px] font-bold tracking-[0.2em] text-ink-muted uppercase mb-4">New Requests</p>
+      <p class="text-4xl font-mono text-teal">{newLeads}</p>
+    </div>
+    <div class="bg-white p-8 rounded-2xl border border-border shadow-sm">
+      <p class="text-[10px] font-bold tracking-[0.2em] text-ink-muted uppercase mb-4">Total Funnel</p>
+      <p class="text-4xl font-mono text-ink">{inquiries?.length || 0}</p>
+    </div>
+    <div class="bg-coral-dark p-8 rounded-2xl shadow-lg text-white">
+      <p class="text-[10px] font-bold tracking-[0.2em] opacity-60 uppercase mb-4">Conversion Goal</p>
+      <p class="text-4xl font-mono">100%</p>
+    </div>
+  </div>
+
+  <!-- Table: Magazine Style -->
+  <div class="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
+    <table class="w-full text-left">
+      <thead>
+        <tr class="border-b border-border">
+          <th class="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-ink-muted">Timestamp</th>
+          <th class="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-ink-muted">Traveler</th>
+          <th class="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-ink-muted">Selected Journey</th>
+          <th class="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-ink-muted">Status</th>
+          <th class="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-ink-muted text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        {inquiries?.map((item) => (
+          <tr class="group hover:bg-surface transition-colors">
+            <td class="px-8 py-6 text-xs font-mono text-ink-muted">
+              {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </td>
+            <td class="px-8 py-6">
+              <div class="font-bold text-sm text-ink">{item.name}</div>
+              <div class="text-xs text-ink-muted">{item.email}</div>
+            </td>
+            <td class="px-8 py-6">
+              <div class="text-xs font-medium text-teal bg-teal-pale px-3 py-1 rounded-full inline-block">
+                {item.package_title || 'Custom Request'}
+              </div>
+            </td>
+            <td class="px-8 py-6">
+               <span class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-amber-600">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                  {item.status}
+               </span>
+            </td>
+            <td class="px-8 py-6 text-right">
+              <button class="text-[10px] font-bold uppercase tracking-widest text-ink-muted hover:text-coral transition-colors">
+                View Details
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

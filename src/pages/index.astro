@@ -1,17 +1,97 @@
 ---
+import PublicLayout from '../layouts/public_layout.astro';
+import PackageCard from '../components/package_card.astro';
+import { supabase } from '../lib/supabase_client';
+import { siteConfig } from '../config/site';
 
+const { data: packages, error } = await supabase
+  .from('packages')
+  .select('*')
+  .eq('status', 'active');
+
+if (error) console.error('Supabase Error:', error);
 ---
+<PublicLayout title="Follow Your Heartbeat">
+  <main>
+    <!-- Hero Section -->
+    <section class="relative h-[90vh] flex items-center overflow-hidden bg-ink">
+      <!-- Background Image with Ken Burns -->
+      <div class="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=2000" 
+          alt="Palawan Paradise" 
+          class="w-full h-full object-cover opacity-60 animate-ken-burns"
+        />
+        <div class="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/40 to-transparent"></div>
+      </div>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+      <!-- Hero Content -->
+      <div class="container mx-auto px-6 relative z-10">
+        <div class="max-w-3xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal/20 border border-teal/30 text-teal-pale text-xs font-medium mb-6 backdrop-blur-md">
+            <span class="w-2 h-2 rounded-full bg-teal animate-pulse"></span>
+            IATA ACCREDITED AGENCY
+          </div>
+          
+            <h1 class="text-white text-6xl md:text-8xl font-light mb-6 leading-tight">
+            {siteConfig.brand.tagline.split(' ')[0]} 
+              <span class="italic font-normal">{siteConfig.brand.tagline.split(' ').slice(1).join(' ')}</span>
+            </h1>
+
+            <p class="text-white/80 text-xl md:text-2xl font-sans max-w-xl mb-10 leading-relaxed">
+              {siteConfig.brand.description}
+            </p>
+
+          <div class="flex flex-wrap gap-4">
+            <button class="bg-coral hover:bg-coral-dark text-white px-8 py-4 rounded-lg font-medium transition-all shadow-xl hover:-translate-y-1">
+              Explore Packages
+            </button>
+            <button class="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md px-8 py-4 rounded-lg font-medium transition-all">
+              Talk to a Specialist
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Destinations Section -->
+    <section class="py-24 bg-surface">
+      <div class="container mx-auto px-6">
+        <div class="flex justify-between items-end mb-12">
+          <div>
+            <h2 class="text-4xl md:text-5xl font-serif text-ink">Featured Destinations</h2>
+            <p class="text-ink-muted mt-2 text-lg">Handpicked journeys for the modern traveler.</p>
+          </div>
+          <a href="/domestic" class="hidden md:block text-teal font-bold text-sm border-b-2 border-teal pb-1 hover:text-teal-dark transition-colors">
+            View All Packages
+          </a>
+        </div>
+        
+        <!-- The Grid using the PackageCard component -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {packages && packages.map((pkg) => (
+            <PackageCard pkg={pkg} />
+          ))}
+        </div>
+
+        {(!packages || packages.length === 0) && (
+          <div class="text-center py-20 border-2 border-dashed border-border rounded-xl">
+            <p class="text-ink-muted">No active packages found in the database.</p>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- Trust Strip -->
+    <section class="bg-sand py-12 border-y border-border">
+      <div class="container mx-auto px-6">
+        <div class="flex flex-wrap justify-between items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
+          <span class="font-serif text-2xl text-ink italic">Trusted since 1999</span>
+          <span class="font-sans font-bold tracking-widest text-xs">DOT ACCREDITED</span>
+          <span class="font-sans font-bold tracking-widest text-xs">PTAA MEMBER</span>
+          <span class="font-sans font-bold tracking-widest text-xs text-teal">IATA</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</PublicLayout>

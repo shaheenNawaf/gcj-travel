@@ -1,0 +1,27 @@
+---
+import AdminLayout from '../../../../layouts/admin_layout.astro';
+import PackageForm from '../../../../components/admin/package_form.tsx';
+import { supabase } from '../../../../lib/supabase_client';
+
+const { id } = Astro.params;
+
+// Fetch the existing data for this specific package
+const { data: pkg } = await supabase
+  .from('packages')
+  .select('*')
+  .eq('id', id)
+  .single();
+
+if (!pkg) return Astro.redirect('/admin/packages');
+---
+
+<AdminLayout title="Edit Journey">
+  <div style="margin-bottom: 48px;">
+    <a href="/admin/packages" style="text-decoration: none; color: #1a6b6b; font-size: 12px; font-weight: bold;">&larr; BACK TO CATALOG</a>
+    <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 48px; margin: 16px 0 8px;">Edit Journey</h1>
+    <p style="color: #4b5563;">Refine the details of "{pkg.title}"</p>
+  </div>
+
+  <!-- Pass the existing package data to the form -->
+  <PackageForm client:load initialData={pkg} isEdit={true} />
+</AdminLayout>

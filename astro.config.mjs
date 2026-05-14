@@ -1,11 +1,11 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
-
 import react from '@astrojs/react';
+import tailwind from '@tailwindcss/vite';
 
-import mdx from '@astrojs/mdx';
-
-// https://astro.build/config
 export default defineConfig({
-  integrations: [react(), mdx()]
+  // Tailwind 4 runs as a Vite plugin now
+  vite: {
+    plugins: [tailwind()],
+  },
+  integrations: [react()],
 });

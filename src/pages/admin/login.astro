@@ -1,0 +1,100 @@
+---
+import '../../styles/global.css';
+---
+
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Admin Login</h1>
+      <p>EDITOR'S DESK ACCESS</p>
+    </div>
+
+    <form id="login-form" class="login-form">
+      <div class="input-group">
+        <label>Email Address</label>
+        <input required type="email" name="email" placeholder="admin@gcj.edition" />
+      </div>
+      <div class="input-group">
+        <label>Security Key</label>
+        <input required type="password" name="password" placeholder="••••••••" />
+      </div>
+      <button type="submit" class="submit-btn">Sign In to Dashboard</button>
+    </form>
+
+    <div class="login-footer">
+      <a href="/">&larr; BACK TO MAGAZINE</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .login-page {
+    min-height: 100vh;
+    width: 100vw;
+    background-color: #fafaf8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    border: 1px solid #e2ddd7;
+    overflow: hidden;
+  }
+
+  .login-header { padding: 40px 40px 20px; text-align: center; }
+  .login-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 32px; margin: 0 0 8px; }
+  .login-header p { font-size: 10px; font-weight: bold; letter-spacing: 0.2em; color: #4b5563; margin: 0; }
+
+  .login-form { padding: 0 40px 40px; display: flex; flex-direction: column; gap: 24px; }
+  
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-group label { font-size: 10px; font-weight: bold; letter-spacing: 0.1em; color: #4b5563; text-transform: uppercase; }
+  .input-group input { 
+    padding: 16px; 
+    background: #fafaf8; 
+    border: 1px solid #e2ddd7; 
+    border-radius: 12px; 
+    outline: none; 
+    font-size: 14px;
+  }
+  .input-group input:focus { border-color: #1a6b6b; }
+
+  .submit-btn {
+    background: #0d1117;
+    color: white;
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .submit-btn:hover { background: #1a6b6b; }
+
+  .login-footer { padding: 20px; background: #f5f0e8; text-align: center; border-top: 1px solid #e2ddd7; }
+  .login-footer a { font-size: 10px; font-weight: bold; color: #4b5563; text-decoration: none; letter-spacing: 0.1em; }
+</style>
+
+<script>
+  import { supabase } from '../../lib/supabase_client';
+
+  const form = document.getElementById('login-form') as HTMLFormElement;
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) alert(error.message);
+    else window.location.href = '/admin/inquiries';
+  });
+</script>

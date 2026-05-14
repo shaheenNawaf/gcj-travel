@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand Colors */
+  --color-teal: #1a6b6b;
+  --color-teal-dark: #124d4d;
+  --color-teal-pale: #e6f4f4;
+  
+  --color-coral: #e8562a;
+  --color-coral-dark: #c94420;
+  
+  --color-gold: #c9983a;
+  --color-gold-pale: #fdf6e3;
+
+  --color-ink: #0d1117;
+  --color-ink-muted: #4b5563;
+  
+  --color-surface: #fafaf8;
+  --color-surface-alt: #f0ede8;
+  --color-sand: #f5f0e8;
+  --color-border: #e2ddd7;
+
+  /* Fonts */
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "DM Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
+
+  /* Spacing & Radius */
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+/* Base Styles */
+@layer base {
+  body {
+    @apply bg-surface text-ink font-sans antialiased;
+  }
+  
+  h1, h2, h3, .display-serif {
+    @apply font-serif leading-tight;
+  }
+}
+
+@keyframes kenBurns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.08); }
+}
+
+.animate-ken-burns {
+  animation: kenBurns 12s ease-in-out infinite alternate;
+}

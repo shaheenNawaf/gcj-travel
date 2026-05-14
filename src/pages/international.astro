@@ -1,0 +1,26 @@
+---
+import PublicLayout from '../layouts/public_layout.astro';
+import PackageGrid from '../components/package_grid.jsx';
+import { supabase } from '../lib/supabase_client';
+
+const intlRegions = ['All', 'Japan', 'South Korea', 'China', 'Southeast Asia', 'Europe'];
+
+const { data: packages } = await supabase
+  .from('packages')
+  .select('*')
+  .eq('status', 'active')
+  .eq('is_international', true)
+  .order('price', { ascending: true });
+---
+
+<PublicLayout title="International Tours">
+  <main class="pt-32 pb-24">
+    <div class="container mx-auto px-6">
+      <div class="max-w-2xl mb-12">
+        <h1 class="text-5xl font-serif text-ink mb-4">Global Journeys</h1>
+        <p class="text-ink-muted text-lg">Experience the world with GCJ's signature comfort.</p>
+      </div>
+      <PackageGrid client:load initialPackages={packages || []} regions={intlRegions} />
+    </div>
+  </main>
+</PublicLayout>
