@@ -22,3 +22,24 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Astro
+dist/
+.astro/
+
+# Node
+node_modules/
+
+# Env files — never commit these
+.env
+.env.local
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+EOF
