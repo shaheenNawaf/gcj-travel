@@ -5,12 +5,10 @@ const isHome = pathname === "/";
 ---
 <nav id="main-nav" class:list={["fixed top-0 w-full z-[100] transition-all duration-300", isHome ? "py-6" : "bg-ink py-4 border-b border-white/10"]}>
   <div class="container mx-auto px-6 flex justify-between items-center">
-    <!-- Dynamic Logo -->
     <a href="/" class="text-white text-2xl font-serif tracking-tight group">
       {siteConfig.brand.name} <span class="font-light opacity-80 group-hover:opacity-100 transition-opacity">{siteConfig.brand.suffix}</span>
     </a>
 
-    <!-- Dynamic Links -->
     <div class="hidden md:flex items-center gap-8">
       {siteConfig.nav.map((link) => (
         <a href={link.href} class="text-white/90 hover:text-white text-sm font-medium tracking-wide transition-colors">
@@ -20,14 +18,17 @@ const isHome = pathname === "/";
     </div>
 
     <div class="flex items-center gap-4">
-      <button class="bg-coral hover:bg-coral-dark text-white px-5 py-2 rounded-full text-xs font-bold shadow-lg transition-all">
-        INQUIRE NOW
-      </button>
+      <a href="/contact" class="bg-coral hover:bg-coral-dark text-white px-5 py-2 rounded-full text-xs font-bold shadow-lg transition-all"> GET A QUOTE </a>
     </div>
   </div>
 </nav>
 
 <script define:vars={{ isHome }}>
+  import { openInquiryModal } from '../lib/store';
+  document.getElementById('nav-inquire-btn')?.addEventListener('click', () => {
+    openInquiryModal(null, 'General Inquiry');
+  });
+
   const nav = document.getElementById('main-nav');
   
   if (nav && isHome) {

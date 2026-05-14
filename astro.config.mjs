@@ -1,9 +1,11 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@tailwindcss/vite';
+import netlify from '@astrojs/netlify';
 
 export default defineConfig({
-  // Tailwind 4 runs as a Vite plugin now
+  output: 'static',
+  adapter: netlify(),
   vite: {
     plugins: [tailwind()],
   },

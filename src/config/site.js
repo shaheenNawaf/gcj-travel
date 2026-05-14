@@ -1,14 +1,15 @@
 export const siteConfig = {
   brand: {
     name: "GCJ",
-    suffix: "Edition",
+    suffix: "Travel & Tours",
     tagline: "Follow Your Heartbeat",
-    description: "Premium, tailor-made journeys for the modern explorer.",
+    description: "Explore the world, without breaking the bank.",
   },
   nav: [
     { label: "DOMESTIC", href: "/domestic" },
     { label: "INTERNATIONAL", href: "/international" },
-    { label: "CONTACT", href: "/contact" },
+    { label: "PACKAGES", href: "/packages" },
+    //{ label: "CONTACT", href: "/contact" },
   ],
   contact: {
     email: "hello@gcjtravel.com",
@@ -18,7 +19,7 @@ export const siteConfig = {
     instagram: "#",
   },
   seo: {
-    defaultTitle: "GCJ Travel | Premium Tours",
+    defaultTitle: "GCJ Travel and Tours | Philippines, SEA, ASIA",
     defaultDescription: "Experience the world with GCJ Edition.",
     ogImage: "/og-image.jpg",
     keywords: ["travel", "philippines", "luxury"],

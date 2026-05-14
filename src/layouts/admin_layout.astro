@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { siteConfig } from '../config/site';
 const { title = "Admin" } = Astro.props;
+const currentPath = Astro.url.pathname;
 ---
 
 <html lang="en">
@@ -23,11 +24,15 @@ const { title = "Admin" } = Astro.props;
         
         <nav class="sidebar-nav">
           <p class="nav-label">Management</p>
-          <a href="/admin/inquiries" class="nav-link active">
+          <a href="/admin/inquiries" class:list={["nav-link", { active: currentPath === '/admin/inquiries' }]}>
             Inquiries <span class="badge">New</span>
           </a>
-          <a href="/admin/packages" class="nav-link">Tour Catalog</a>
-          <a href="/admin/media" class="nav-link">Media Assets</a>
+          <a href="/admin/packages" class:list={["nav-link", { active: currentPath.startsWith('/admin/packages') }]}>
+            Tour Catalog
+          </a>
+          <a href="/admin/media" class:list={["nav-link", { active: currentPath === '/admin/media' }]}>
+            Media Assets
+          </a>
         </nav>
 
         <div class="sidebar-footer">

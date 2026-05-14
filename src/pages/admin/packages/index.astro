@@ -30,7 +30,7 @@ const { data: packages } = await supabase
         </div>
         <div class="row-price">₱{pkg.price.toLocaleString()}</div>
         <div class="row-actions">
-          <button class="action-btn">Edit</button>
+          <a href={`/admin/packages/edit/${pkg.id}`} class="action-btn text-decoration: none">Edit</a>
           <button class="action-btn delete" data-id={pkg.id} data-title={pkg.title}> Delete </button>
         </div>
       </div>

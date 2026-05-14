@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Navbar from '../components/navbar.astro';
 import InquiryModal from '../components/inquiry_modal.jsx';
+import Footer from '../components/footer.astro';
 import { siteConfig } from '../config/site';
 
 interface Props {
@@ -47,6 +48,7 @@ const displayTitle = title
   <body class="bg-surface">
     <Navbar />
     <slot />
+    <Footer />
     <InquiryModal client:load />
   </body>
 </html>

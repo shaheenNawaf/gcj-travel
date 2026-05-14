@@ -51,7 +51,7 @@ export default function InquiryModal() {
           <div className="flex justify-between items-start mb-6">
             <div>
               <h2 className="text-3xl font-serif text-ink">Inquire Now</h2>
-              <p className="text-teal font-medium mt-1">{packageTitle}</p>
+              {packageTitle && <p className="text-teal font-medium mt-1">{packageTitle}</p>}
             </div>
             <button onClick={closeInquiryModal} className="text-ink-muted hover:text-ink text-2xl">&times;</button>
           </div>

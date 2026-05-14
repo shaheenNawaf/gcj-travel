@@ -6,9 +6,9 @@ export default function PackageGrid({ initialPackages, regions = ['All'] }) {
 
   const filteredPackages = filter === 'All' 
     ? initialPackages 
-    : initialPackages.filter(p => p.region === filter);
+    : initialPackages.filter(p => p.region?.trim().toLowerCase() === filter.toLowerCase());
 
-  return (
+    return (
     <div>
       {/* Dynamic Filter Tabs */}
       <div className="flex flex-wrap gap-2 mb-12 border-b border-border pb-6">
@@ -63,3 +63,6 @@ export default function PackageGrid({ initialPackages, regions = ['All'] }) {
     </div>
   );
 }
+
+
+

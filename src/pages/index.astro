@@ -13,9 +13,7 @@ if (error) console.error('Supabase Error:', error);
 ---
 <PublicLayout title="Follow Your Heartbeat">
   <main>
-    <!-- Hero Section -->
     <section class="relative h-[90vh] flex items-center overflow-hidden bg-ink">
-      <!-- Background Image with Ken Burns -->
       <div class="absolute inset-0 z-0">
         <img 
           src="https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=2000" 
@@ -25,7 +23,6 @@ if (error) console.error('Supabase Error:', error);
         <div class="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/40 to-transparent"></div>
       </div>
 
-      <!-- Hero Content -->
       <div class="container mx-auto px-6 relative z-10">
         <div class="max-w-3xl">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal/20 border border-teal/30 text-teal-pale text-xs font-medium mb-6 backdrop-blur-md">
@@ -43,18 +40,13 @@ if (error) console.error('Supabase Error:', error);
             </p>
 
           <div class="flex flex-wrap gap-4">
-            <button class="bg-coral hover:bg-coral-dark text-white px-8 py-4 rounded-lg font-medium transition-all shadow-xl hover:-translate-y-1">
-              Explore Packages
-            </button>
-            <button class="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md px-8 py-4 rounded-lg font-medium transition-all">
-              Talk to a Specialist
-            </button>
+            <a href="/packages" class="bg-coral hover:bg-coral-dark text-white px-8 py-4 rounded-lg font-medium transition-all shadow-xl hover:-translate-y-1"> Explore Packages </a>
+            <a href="/contact" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md px-8 py-4 rounded-lg font-medium transition-all"> Talk to a Specialist </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Featured Destinations Section -->
     <section class="py-24 bg-surface">
       <div class="container mx-auto px-6">
         <div class="flex justify-between items-end mb-12">
@@ -79,18 +71,6 @@ if (error) console.error('Supabase Error:', error);
             <p class="text-ink-muted">No active packages found in the database.</p>
           </div>
         )}
-      </div>
-    </section>
-
-    <!-- Trust Strip -->
-    <section class="bg-sand py-12 border-y border-border">
-      <div class="container mx-auto px-6">
-        <div class="flex flex-wrap justify-between items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
-          <span class="font-serif text-2xl text-ink italic">Trusted since 1999</span>
-          <span class="font-sans font-bold tracking-widest text-xs">DOT ACCREDITED</span>
-          <span class="font-sans font-bold tracking-widest text-xs">PTAA MEMBER</span>
-          <span class="font-sans font-bold tracking-widest text-xs text-teal">IATA</span>
-        </div>
       </div>
     </section>
   </main>
