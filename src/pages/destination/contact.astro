@@ -1,6 +1,6 @@
 ---
-import PublicLayout from '../layouts/public_layout.astro';
-import { siteConfig } from '../config/site';
+import PublicLayout from '../../layouts/public_layout.astro';
+import { siteConfig } from '../../config/site';
 ---
 
 <PublicLayout title="Contact Us">
@@ -86,7 +86,7 @@ import { siteConfig } from '../config/site';
 </PublicLayout>
 
 <script>
-  import { supabase } from '../lib/supabase_client';
+  import { supabase } from '../../lib/supabase_client';
 
   const form = document.getElementById('contact-form') as HTMLFormElement;
   const success = document.getElementById('form-success');
