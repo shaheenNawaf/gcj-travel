@@ -1,8 +1,8 @@
 ---
-import PublicLayout from '../../layouts/public_layout.astro';
-import ConversionBanner from '../../components/conversion_banner.astro';
-import PackageGrid from '../../components/package_grid.jsx';
-import { supabase } from '../../lib/supabase_client';
+import PublicLayout from '../layouts/public_layout.astro';
+import ConversionBanner from '../components/conversion_banner.astro';
+import PackageGrid from '../components/package_grid.jsx';
+import { supabase } from '../lib/supabase_client';
 
 const { data: packages } = await supabase
   .from('packages')
