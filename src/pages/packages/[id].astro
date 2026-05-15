@@ -1,0 +1,180 @@
+---
+export const prerender = false;
+
+import PublicLayout from '../../layouts/public_layout.astro';
+import { supabase } from '../../lib/supabase_client';
+import { marked } from 'marked';
+
+const { id } = Astro.params;
+const { data: pkg } = await supabase
+  .from('packages')
+  .select('*')
+  .eq('id', id)
+  .single();
+
+if (!pkg) return Astro.redirect('/404');
+
+const descriptionHtml = pkg.description_md ? marked(pkg.description_md) : null;
+
+// Normalize images array — fall back to image_url if no images array yet
+const allImages: string[] = pkg.images?.length ? pkg.images : pkg.image_url ? [pkg.image_url] : [];
+---
+
+<PublicLayout title={pkg.title}>
+
+  <!-- Hero -->
+  <div class="relative h-[70vh] overflow-hidden">
+    <img src={allImages[0]} alt={pkg.title} class="w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent"></div>
+    <div class="absolute bottom-0 left-0 right-0 p-12 container mx-auto">
+      <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-coral mb-3">
+        {pkg.is_international ? 'International' : 'Domestic'} · {pkg.region}
+      </p>
+      <h1 class="text-5xl md:text-7xl font-serif text-white mb-6 leading-tight max-w-3xl">{pkg.title}</h1>
+      <div class="flex flex-wrap gap-6 text-white/70 text-sm">
+        <span>⏱ {pkg.days} Days</span>
+        <span>📍 {pkg.region}</span>
+        <span class="text-coral font-bold text-lg">₱{pkg.price?.toLocaleString()}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Gallery Grid (only show if more than 1 image) -->
+  {allImages.length > 1 && (
+    <div class="container mx-auto px-6 py-10">
+      <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-6">Photo Gallery</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {allImages.slice(1).map((url: string, i: number) => (
+          <div class="aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer gallery-item"
+            data-src={url} data-index={i + 1}>
+            <img
+              src={url}
+              alt={`${pkg.title} photo ${i + 2}`}
+              class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="hidden fixed inset-0 z-[300] bg-black/90 flex items-center justify-center p-6">
+    <button id="lightbox-close" class="absolute top-6 right-6 text-white/70 hover:text-white text-3xl font-light">✕</button>
+    <button id="lightbox-prev" class="absolute left-6 text-white/70 hover:text-white text-4xl font-light">‹</button>
+    <button id="lightbox-next" class="absolute right-16 text-white/70 hover:text-white text-4xl font-light">›</button>
+    <img id="lightbox-img" src="" alt="" class="max-h-[85vh] max-w-full rounded-2xl object-contain" />
+  </div>
+
+  <!-- Content -->
+  <main class="container mx-auto px-6 py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+
+      <!-- Left: Description + Inclusions -->
+      <div class="lg:col-span-2 space-y-12">
+        {descriptionHtml && (
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-6">About This Package</p>
+            <div class="prose prose-lg max-w-none text-ink-muted leading-relaxed" set:html={descriptionHtml} />
+          </div>
+        )}
+
+        {pkg.inclusions?.length > 0 && (
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-6">What's Included</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {pkg.inclusions.map((item: string) => (
+                <div class="flex items-center gap-3 bg-sand rounded-xl p-4 border border-border">
+                  <span class="w-6 h-6 rounded-full bg-teal/10 text-teal flex items-center justify-center text-xs flex-shrink-0">✓</span>
+                  <span class="text-sm text-ink">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Right: Sticky Booking Card -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-28 bg-white rounded-3xl border border-border p-8 shadow-xl">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-ink-muted mb-2">Starting From</p>
+          <p class="text-5xl font-serif text-ink mb-1">₱{pkg.price?.toLocaleString()}</p>
+          <p class="text-ink-muted text-sm mb-8">per person · {pkg.days} days</p>
+
+          <button id="detail-inquire-btn"
+            class="w-full bg-coral hover:bg-coral-dark text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 mb-4">
+            Inquire About This Package
+          </button>
+          <a href="/contact"
+            class="w-full block text-center border border-border hover:border-teal text-ink-muted hover:text-teal font-bold py-4 rounded-xl transition-all text-sm">
+            Talk to a Specialist
+          </a>
+
+          <div class="mt-8 pt-8 border-t border-border space-y-3">
+            <div class="flex justify-between text-sm">
+              <span class="text-ink-muted">Destination</span>
+              <span class="font-medium text-ink">{pkg.region}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-ink-muted">Duration</span>
+              <span class="font-medium text-ink">{pkg.days} Days</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-ink-muted">Type</span>
+              <span class="font-medium text-ink">{pkg.is_international ? 'International' : 'Domestic'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</PublicLayout>
+
+<script define:vars={{ pkgId: pkg.id, pkgTitle: pkg.title, allImages }}>
+  import { openInquiryModal } from '../../lib/store';
+
+  // Inquire button
+  document.getElementById('detail-inquire-btn')
+    ?.addEventListener('click', () => openInquiryModal(pkgId, pkgTitle));
+
+  // Lightbox
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  let currentIndex = 0;
+
+  document.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('click', () => {
+      currentIndex = parseInt(item.dataset.index);
+      lightboxImg.src = allImages[currentIndex];
+      lightbox.classList.remove('hidden');
+    });
+  });
+
+  document.getElementById('lightbox-close')?.addEventListener('click', () => {
+    lightbox.classList.add('hidden');
+  });
+
+  document.getElementById('lightbox-prev')?.addEventListener('click', () => {
+    currentIndex = currentIndex > 0 ? currentIndex - 1 : allImages.length - 1;
+    lightboxImg.src = allImages[currentIndex];
+  });
+
+  document.getElementById('lightbox-next')?.addEventListener('click', () => {
+    currentIndex = currentIndex < allImages.length - 1 ? currentIndex + 1 : 0;
+    lightboxImg.src = allImages[currentIndex];
+  });
+
+  // Close on backdrop click
+  lightbox?.addEventListener('click', (e) => {
+    if (e.target === lightbox) lightbox.classList.add('hidden');
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.classList.contains('hidden')) return;
+    if (e.key === 'Escape') lightbox.classList.add('hidden');
+    if (e.key === 'ArrowLeft') document.getElementById('lightbox-prev')?.click();
+    if (e.key === 'ArrowRight') document.getElementById('lightbox-next')?.click();
+  });
+</script>

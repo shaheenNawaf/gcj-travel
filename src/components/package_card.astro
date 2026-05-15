@@ -17,7 +17,7 @@ const { pkg } = Astro.props;
 
 <div class="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-border">
   <!-- Image Container -->
-  <div class="relative aspect-[4/3] overflow-hidden">
+  <a href={`/packages/${pkg.id}`} class="relative aspect-[4/3] overflow-hidden block">
     <img 
       src={pkg.image_url} 
       alt={pkg.title}
@@ -27,7 +27,7 @@ const { pkg } = Astro.props;
     <div class="absolute top-4 left-4 bg-teal-pale/90 backdrop-blur-md text-teal px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-teal/20">
       {pkg.region}
     </div>
-  </div>
+  </a>
 
   <!-- Content -->
   <div class="p-6">
@@ -51,13 +51,18 @@ const { pkg } = Astro.props;
     </div>
 
     <!-- Footer: Price & CTA -->
-    <div class="flex items-center justify-between pt-4 border-t border-border">
-      <div>
-        <p class="text-[10px] text-ink-muted uppercase tracking-widest leading-none mb-1">Starting from</p>
-        <p class="text-xl font-mono text-teal font-bold">₱{pkg.price.toLocaleString()}</p>
+    <div class="pt-4 border-t border-border">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <p class="text-[10px] text-ink-muted uppercase tracking-widest leading-none mb-1">Starting from</p>
+          <p class="text-xl font-mono text-teal font-bold">₱{pkg.price.toLocaleString()}</p>
+        </div>
+        <InquireButton client:visible pkgId={pkg.id} pkgTitle={pkg.title} />
       </div>
-      
-      <InquireButton client:visible pkgId={pkg.id} pkgTitle={pkg.title} />
+      <a href={`/packages/${pkg.id}`}
+        class="block w-full text-center border border-border hover:border-teal text-ink-muted hover:text-teal font-bold py-3 rounded-xl transition-all text-xs tracking-widest uppercase">
+        View Details
+      </a>
     </div>
   </div>
 </div>
