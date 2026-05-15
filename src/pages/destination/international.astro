@@ -1,7 +1,8 @@
 ---
-import PublicLayout from '../layouts/public_layout.astro';
-import PackageGrid from '../components/package_grid.jsx';
-import { supabase } from '../lib/supabase_client';
+import ConversionBanner from '../../components/conversion_banner.astro';
+import PublicLayout from '../../layouts/public_layout.astro';
+import PackageGrid from '../../components/package_grid.jsx';
+import { supabase } from '../../lib/supabase_client';
 
 const intlRegions = ['All', 'Japan', 'South Korea', 'China', 'Southeast Asia', 'Europe'];
 
@@ -23,4 +24,5 @@ const { data: packages } = await supabase
       <PackageGrid client:load initialPackages={packages || []} regions={intlRegions} />
     </div>
   </main>
+  <ConversionBanner />
 </PublicLayout>

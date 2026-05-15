@@ -1,0 +1,118 @@
+---
+import PublicLayout from '../layouts/public_layout.astro';
+import { siteConfig } from '../config/site';
+---
+
+<PublicLayout title="Contact Us">
+  <main class="pt-40 pb-24">
+    <div class="container mx-auto px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
+
+        <!-- Left: Contact Info -->
+        <div>
+          <h1 class="text-6xl font-serif mb-8 text-ink">Get in <span class="italic">Touch</span></h1>
+          <p class="text-ink-muted text-xl mb-12 leading-relaxed">Our travel specialists are ready to help you plan your next heartbeat moment.</p>
+          
+          <div class="space-y-8">
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-teal mb-2">Direct Line</p>
+              <a href={`tel:${siteConfig.contact.phone}`} class="text-2xl font-serif hover:text-teal transition-colors">
+                {siteConfig.contact.phone}
+              </a>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-teal mb-2">Email Inquiry</p>
+              <a href={`mailto:${siteConfig.contact.email}`} class="text-2xl font-serif hover:text-teal transition-colors">
+                {siteConfig.contact.email}
+              </a>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-teal mb-2">Find Us</p>
+              <p class="text-2xl font-serif">{siteConfig.contact.address}</p>
+            </div>
+            <div class="flex gap-4 pt-4">
+              <a href={siteConfig.contact.facebook} class="w-10 h-10 rounded-full border border-border flex items-center justify-center text-ink-muted hover:text-teal hover:border-teal transition-all text-xs font-bold">FB</a>
+              <a href={siteConfig.contact.instagram} class="w-10 h-10 rounded-full border border-border flex items-center justify-center text-ink-muted hover:text-teal hover:border-teal transition-all text-xs font-bold">IG</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Inquiry Form -->
+        <div class="bg-sand rounded-3xl p-12 border border-border">
+          <h2 class="text-3xl font-serif mb-2">Send us a Message</h2>
+          <p class="text-ink-muted text-sm mb-8">We'll get back to you within 24 hours.</p>
+
+          <div id="form-success" class="hidden text-center py-10">
+            <div class="w-16 h-16 bg-teal-pale text-teal rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">✓</div>
+            <h3 class="text-xl font-bold mb-2">Message Sent!</h3>
+            <p class="text-ink-muted">We'll be in touch shortly.</p>
+          </div>
+
+          <form id="contact-form" class="space-y-6">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Full Name</label>
+              <input required name="name" type="text" placeholder="Juan Dela Cruz"
+                class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Email Address</label>
+              <input required name="email" type="email" placeholder="juan@example.com"
+                class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Interest</label>
+              <select name="package_title" class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all">
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Domestic Package">Domestic Package</option>
+                <option value="International Package">International Package</option>
+                <option value="Custom Package">Custom Package</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Message</label>
+              <textarea required name="message" rows="4" placeholder="Tell us about your dream trip..."
+                class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all resize-none"></textarea>
+            </div>
+            <button type="submit" id="contact-submit"
+              class="w-full bg-ink hover:bg-teal text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98]">
+              Send Message
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</PublicLayout>
+
+<script>
+  import { supabase } from '../lib/supabase_client';
+
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const success = document.getElementById('form-success');
+  const submitBtn = document.getElementById('contact-submit');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (submitBtn) submitBtn.textContent = 'Sending...';
+
+    const formData = new FormData(form);
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message'),
+      package_title: formData.get('package_title'),
+      package_id: null,
+    };
+
+    const { error } = await supabase.from('inquiries').insert([payload]);
+
+    if (error) {
+      alert('Error: ' + error.message);
+      if (submitBtn) submitBtn.textContent = 'Send Message';
+    } else {
+      form.classList.add('hidden');
+      success?.classList.remove('hidden');
+    }
+  });
+</script>

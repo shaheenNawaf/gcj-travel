@@ -41,7 +41,11 @@ if (error) console.error('Supabase Error:', error);
 
           <div class="flex flex-wrap gap-4">
             <a href="/packages" class="bg-coral hover:bg-coral-dark text-white px-8 py-4 rounded-lg font-medium transition-all shadow-xl hover:-translate-y-1"> Explore Packages </a>
-            <a href="/contact" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md px-8 py-4 rounded-lg font-medium transition-all"> Talk to a Specialist </a>
+            <button
+              id="hero-specialist-btn"
+              class="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md px-8 py-4 rounded-lg font-medium transition-all">
+              Talk to a Specialist
+            </button>
           </div>
         </div>
       </div>
@@ -75,3 +79,12 @@ if (error) console.error('Supabase Error:', error);
     </section>
   </main>
 </PublicLayout>
+
+<script>
+  import { openInquiryModal } from '../lib/store';
+
+  document.getElementById('hero-specialist-btn')
+    ?.addEventListener('click', () => {
+      openInquiryModal(null, 'General Inquiry');
+    });
+</script>
