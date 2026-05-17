@@ -1,0 +1,337 @@
+---
+// src/pages/404.astro
+import PublicLayout from '../layouts/public_layout.astro';
+import { supabase } from '../lib/supabase_client';
+
+// Grab a few packages to suggest
+const { data: suggestions } = await supabase
+  .from('packages')
+  .select('id, title, region, image_url, price')
+  .eq('status', 'active')
+  .eq('is_featured', true)
+  .limit(3);
+---
+
+<PublicLayout title="Page Not Found">
+  <main class="notfound">
+
+    <!-- Hero area -->
+    <div class="nf-hero">
+      <div class="nf-bg">
+        <img
+          src="https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=1800"
+          alt="Lost in nature"
+          class="nf-bg-img"
+        />
+        <div class="nf-scrim"></div>
+      </div>
+
+      <div class="nf-content">
+        <div class="nf-code">404</div>
+        <h1 class="nf-headline">
+          Looks like you've<br/><em>wandered off the map.</em>
+        </h1>
+        <p class="nf-sub">
+          The page you're looking for doesn't exist — but the world is full of places that do.
+        </p>
+        <div class="nf-actions">
+          <a href="/" class="nf-btn-primary">Back to Home</a>
+          <a href="/packages" class="nf-btn-secondary">Browse Packages</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggestions -->
+    {suggestions && suggestions.length > 0 && (
+      <section class="nf-suggestions">
+        <div class="nf-container">
+          <p class="nf-sug-eyebrow">Maybe you were looking for...</p>
+          <div class="nf-sug-grid">
+            {suggestions.map(pkg => (
+              <a href={`/packages/${pkg.id}`} class="nf-sug-card">
+                <div class="nf-sug-img-wrap">
+                  <img src={pkg.image_url} alt={pkg.title} class="nf-sug-img" />
+                </div>
+                <div class="nf-sug-body">
+                  <p class="nf-sug-region">{pkg.region}</p>
+                  <p class="nf-sug-title">{pkg.title}</p>
+                  <p class="nf-sug-price">From ₱{(pkg.price || 0).toLocaleString()}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Quick links -->
+    <section class="nf-links">
+      <div class="nf-container">
+        <p class="nf-links-title">Or explore from here</p>
+        <div class="nf-links-row">
+          <a href="/domestic" class="nf-link-card">
+            <span class="nf-link-icon">🇵🇭</span>
+            <span class="nf-link-label">Domestic Packages</span>
+            <span class="nf-link-arrow">→</span>
+          </a>
+          <a href="/international" class="nf-link-card">
+            <span class="nf-link-icon">✈️</span>
+            <span class="nf-link-label">International Tours</span>
+            <span class="nf-link-arrow">→</span>
+          </a>
+          <a href="/packages" class="nf-link-card">
+            <span class="nf-link-icon">🗺️</span>
+            <span class="nf-link-label">All Packages</span>
+            <span class="nf-link-arrow">→</span>
+          </a>
+          <a href="/contact" class="nf-link-card">
+            <span class="nf-link-icon">💬</span>
+            <span class="nf-link-label">Talk to a Specialist</span>
+            <span class="nf-link-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</PublicLayout>
+
+<style>
+  .notfound { padding-top: 0; }
+
+  /* ── Hero ── */
+  .nf-hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+  .nf-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .nf-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.7);
+  }
+  .nf-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(13,17,23,0.75) 0%,
+      rgba(13,17,23,0.55) 50%,
+      rgba(13,17,23,0.85) 100%
+    );
+  }
+  .nf-content {
+    position: relative;
+    z-index: 10;
+    padding: 120px 24px 80px;
+    max-width: 680px;
+  }
+  .nf-code {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(100px, 18vw, 180px);
+    font-weight: 700;
+    color: transparent;
+    -webkit-text-stroke: 2px rgba(26,107,107,0.6);
+    line-height: 0.9;
+    margin-bottom: 24px;
+    letter-spacing: -4px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .nf-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    color: white;
+    line-height: 1.2;
+    margin: 0 0 20px;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+  .nf-headline em {
+    font-style: italic;
+    color: rgba(255,255,255,0.65);
+  }
+  .nf-sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+  .nf-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s ease 0.3s both;
+  }
+  .nf-btn-primary {
+    background: #1a6b6b;
+    color: white;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    box-shadow: 0 8px 24px rgba(26,107,107,0.3);
+  }
+  .nf-btn-primary:hover {
+    background: #124d4d;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(26,107,107,0.4);
+  }
+  .nf-btn-secondary {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s;
+  }
+  .nf-btn-secondary:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+
+  /* ── Suggestions ── */
+  .nf-suggestions {
+    padding: 64px 0;
+    background: #fafaf8;
+  }
+  .nf-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .nf-sug-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #1a6b6b;
+    margin: 0 0 24px;
+  }
+  .nf-sug-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .nf-sug-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #e2ddd7;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .nf-sug-card:hover {
+    box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+  }
+  .nf-sug-img-wrap { aspect-ratio: 16/9; overflow: hidden; }
+  .nf-sug-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+  }
+  .nf-sug-card:hover .nf-sug-img { transform: scale(1.05); }
+  .nf-sug-body { padding: 16px; }
+  .nf-sug-region {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #1a6b6b;
+    margin: 0 0 4px;
+  }
+  .nf-sug-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: #0d1117;
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+  .nf-sug-price {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a6b6b;
+    margin: 0;
+  }
+
+  /* ── Quick links ── */
+  .nf-links {
+    padding: 48px 0 80px;
+    background: #fafaf8;
+    border-top: 1px solid #e2ddd7;
+  }
+  .nf-links-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin: 0 0 20px;
+  }
+  .nf-links-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .nf-link-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1.5px solid #e2ddd7;
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-decoration: none;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .nf-link-card:hover {
+    border-color: #1a6b6b;
+    color: #1a6b6b;
+    transform: translateX(4px);
+  }
+  .nf-link-icon { font-size: 20px; }
+  .nf-link-label { flex: 1; }
+  .nf-link-arrow {
+    opacity: 0.3;
+    font-size: 16px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .nf-link-card:hover .nf-link-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>

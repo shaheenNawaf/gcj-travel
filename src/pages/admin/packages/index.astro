@@ -30,8 +30,8 @@ const { data: packages } = await supabase
         </div>
         <div class="row-price">₱{pkg.price.toLocaleString()}</div>
         <div class="row-actions">
-          <a href={`/admin/packages/edit/${pkg.id}`} class="action-btn text-decoration: none">Edit</a>
-          <button class="action-btn delete" data-id={pkg.id} data-title={pkg.title}> Delete </button>
+          <a href={`/admin/packages/edit/${pkg.id}`} class="action-btn" style="text-decoration: none;">Edit</a>
+          <button class="action-btn delete" data-id={pkg.id} data-title={pkg.title}>Delete</button>
         </div>
       </div>
     ))}
@@ -51,7 +51,7 @@ const { data: packages } = await supabase
     .add-btn:hover { background: #0d1117; transform: translateY(-2px); }
 
     .package-list { display: flex; flex-direction: column; gap: 16px; }
-    
+
     .package-row {
       background: white;
       border: 1px solid #e2ddd7;
@@ -65,7 +65,7 @@ const { data: packages } = await supabase
     .package-row:hover { border-color: #1a6b6b; }
 
     .row-img { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; }
-    
+
     .row-content { flex: 1; }
     .row-meta { display: flex; gap: 8px; margin-bottom: 4px; }
     .region-tag { font-size: 10px; font-weight: bold; color: #1a6b6b; background: #e6f4f4; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
@@ -75,14 +75,14 @@ const { data: packages } = await supabase
     .row-price { font-family: 'DM Mono', monospace; font-weight: bold; color: #1a6b6b; }
 
     .row-actions { display: flex; gap: 8px; }
-    .action-btn { 
-      background: #fafaf8; 
-      border: 1px solid #e2ddd7; 
-      padding: 8px 16px; 
-      border-radius: 8px; 
-      font-size: 12px; 
-      font-weight: bold; 
-      cursor: pointer; 
+    .action-btn {
+      background: #fafaf8;
+      border: 1px solid #e2ddd7;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
     }
     .action-btn.delete:hover { color: #dc2626; border-color: #dc2626; }
   </style>
@@ -91,13 +91,13 @@ const { data: packages } = await supabase
 <script>
   import { supabase } from '../../../lib/supabase_client';
 
-  // Find all delete buttons
   const deleteButtons = document.querySelectorAll('.action-btn.delete');
 
   deleteButtons.forEach(button => {
     button.addEventListener('click', async (e) => {
-      const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
-      const title = (e.currentTarget as HTMLElement).getAttribute('data-title');
+      const el = e.currentTarget as HTMLElement;
+      const id = el.getAttribute('data-id');
+      const title = el.getAttribute('data-title');
 
       if (confirm(`Are you sure you want to remove "${title}" from the catalog?`)) {
         const { error } = await supabase
@@ -106,9 +106,8 @@ const { data: packages } = await supabase
           .eq('id', id);
 
         if (error) {
-          alert("Error deleting: " + error.message);
+          alert('Error deleting: ' + error.message);
         } else {
-          // Refresh the page to show it's gone
           window.location.reload();
         }
       }
