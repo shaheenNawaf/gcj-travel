@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import InquireButton from './inquire_button';
+import InquireButton from './InquireButton';
 
 function SkeletonCard() {
   return (
