@@ -1,0 +1,83 @@
+---
+import '../styles/global.css';
+import { siteConfig } from '../config/site';
+const { title = "Admin" } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title} | Editor's Desk</title>
+    <meta name="viewport" content="width=device-width" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&family=DM+Sans:wght@400;500;700&family=DM+Mono&display=swap" rel="stylesheet">
+  </head>
+  <body class="margin-0 padding-0 overflow-hidden bg-[#fcfcfb]">
+    <div class="admin-grid">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="p-8">
+          <a href="/" class="logo-serif text-2xl text-white no-underline">
+            {siteConfig.brand.name} <span class="opacity-40 italic font-light">Edition</span>
+          </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <p class="px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-4">Management</p>
+          <a href="/admin/inquiries" class:list={["nav-link", { active: currentPath === '/admin/inquiries' }]}>
+            Inquiries <span class="bg-teal text-[10px] px-2 py-0.5 rounded-full">New</span>
+          </a>
+          <a href="/admin/packages" class:list={["nav-link", { active: currentPath.startsWith('/admin/packages') }]}>
+            Tour Catalog
+          </a>
+          <a href="/admin/media" class:list={["nav-link", { active: currentPath === '/admin/media' }]}>
+            Media Assets
+          </a>
+        </nav>
+
+        <div class="p-8 border-t border-white/5">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-8 h-8 bg-teal rounded-full flex items-center justify-center text-xs font-bold text-white">AD</div>
+            <div class="text-xs">
+              <p class="font-bold m-0 leading-tight">Admin User</p>
+              <p class="opacity-40 m-0 mt-0.5 leading-tight">Editor-in-Chief</p>
+            </div>
+          </div>
+          <button id="logout-btn" class="bg-none border-none text-white/40 hover:text-white text-[10px] font-bold tracking-wider cursor-pointer p-0">SECURE SIGN OUT</button>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <div class="main-wrapper">
+        <header class="h-20 bg-white border-b border-border flex items-center justify-between px-12">
+           <span class="font-mono text-xs text-gray-500 uppercase tracking-widest">{title}</span>
+           <div class="flex items-center gap-2 text-[10px] font-bold tracking-wider">
+              <div class="w-2 h-2 bg-teal rounded-full"></div>
+              <span>SYSTEM LIVE</span>
+           </div>
+        </header>
+
+        <main class="content-area">
+          <div class="max-w-[1100px] mx-auto">
+            <slot />
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      import { supabase } from '../lib/supabase_client';
+      const checkUser = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session && window.location.pathname !== '/admin/login') {
+            window.location.href = '/admin/login';
+        }
+      };
+      checkUser();
+      document.getElementById('logout-btn')?.addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.href = '/admin/login';
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+---
+interface Props {
+  days: string[];
+}
+
+const { days = [] } = Astro.props;
+---
+
+<div class="space-y-4">
+  {days.map((dayText, index) => {
+    // Standard format helper: If the text is formatted like "Day X: Title\nDescription", 
+    // we split it to render structured headers nicely.
+    const lines = dayText.split('\n');
+    const titleLine = lines[0] || `Day ${index + 1}`;
+    const descLines = lines.slice(1).join('\n');
+
+    return (
+      <details class="group bg-sand/40 border border-border rounded-2xl p-6 transition-all duration-300 [&_summary::-webkit-details-marker]:hidden">
+        <summary class="flex items-center justify-between cursor-pointer focus:outline-none list-none">
+          <div class="flex items-center gap-4">
+            <span class="w-8 h-8 rounded-full bg-teal text-white font-mono text-sm font-bold flex items-center justify-center flex-shrink-0">
+              {index + 1}
+            </span>
+            <h4 class="font-serif text-xl text-ink font-semibold select-none group-hover:text-teal transition-colors">
+              {titleLine.replace(/^Day\s\d+:\s?/i, '')}
+            </h4>
+          </div>
+          <span class="ml-1.5 flex-shrink-0 rounded-full bg-white p-1.5 text-ink-muted border border-border group-open:rotate-180 transition-transform duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </span>
+        </summary>
+
+        <div class="mt-4 pl-12 border-t border-border pt-4 text-sm text-ink-muted leading-relaxed whitespace-pre-line">
+          {descLines || dayText}
+        </div>
+      </details>
+    );
+  })}
+</div>

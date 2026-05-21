@@ -1,9 +1,10 @@
 ---
 export const prerender = false;
 
-import PublicLayout from '../../layouts/public_layout.astro';
-import { supabase } from '../../lib/supabase_client';
+import PublicLayout from '@layouts/PublicLayout.astro';
+import { supabase } from '@lib/supabase_client';
 import { marked } from 'marked';
+import ItineraryTimeline from '@components/ItineraryTimeline.astro';
 
 const { id } = Astro.params;
 const { data: pkg } = await supabase
@@ -15,14 +16,12 @@ const { data: pkg } = await supabase
 if (!pkg) return Astro.redirect('/404');
 
 const descriptionHtml = pkg.description_md ? marked(pkg.description_md) : null;
-
-// Normalize images array — fall back to image_url if no images array yet
 const allImages: string[] = pkg.images?.length ? pkg.images : pkg.image_url ? [pkg.image_url] : [];
 ---
 
 <PublicLayout title={pkg.title}>
 
-  <!-- Hero -->
+  <!-- Hero Details Header Banner -->
   <div class="relative h-[70vh] overflow-hidden">
     <img src={allImages[0]} alt={pkg.title} class="w-full h-full object-cover" />
     <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent"></div>
@@ -39,7 +38,7 @@ const allImages: string[] = pkg.images?.length ? pkg.images : pkg.image_url ? [p
     </div>
   </div>
 
-  <!-- Image Gallery Grid (only show if more than 1 image) -->
+  <!-- Multi-Photo Gallery Stream -->
   {allImages.length > 1 && (
     <div class="container mx-auto px-6 py-10">
       <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-6">Photo Gallery</p>
@@ -58,25 +57,31 @@ const allImages: string[] = pkg.images?.length ? pkg.images : pkg.image_url ? [p
     </div>
   )}
 
-  <!-- Lightbox -->
+  <!-- Dynamic Lightbox Modal Target -->
   <div id="lightbox" class="hidden fixed inset-0 z-[300] bg-black/90 flex items-center justify-center p-6">
-    <button id="lightbox-close" class="absolute top-6 right-6 text-white/70 hover:text-white text-3xl font-light">✕</button>
-    <button id="lightbox-prev" class="absolute left-6 text-white/70 hover:text-white text-4xl font-light">‹</button>
-    <button id="lightbox-next" class="absolute right-16 text-white/70 hover:text-white text-4xl font-light">›</button>
-    <img id="lightbox-img" src="" alt="" class="max-h-[85vh] max-w-full rounded-2xl object-contain" />
+    <button id="lightbox-close" class="absolute top-6 right-6 text-white/70 hover:text-white text-3xl font-light cursor-pointer">✕</button>
+    <button id="lightbox-prev" class="absolute left-6 text-white/70 hover:text-white text-4xl font-light cursor-pointer">‹</button>
+    <button id="lightbox-next" class="absolute right-16 text-white/70 hover:text-white text-4xl font-light cursor-pointer">›</button>
+    <img id="lightbox-img" src="" alt="Lightbox Zoom" class="max-h-[85vh] max-w-full rounded-2xl object-contain" />
   </div>
 
-  <!-- Content -->
   <main class="container mx-auto px-6 py-20">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
 
-      <!-- Left: Description + Inclusions -->
+      <!-- Left Column: Rich Text & Inclusions -->
       <div class="lg:col-span-2 space-y-12">
-        {descriptionHtml && (
+        {pkg.itinerary_days && pkg.itinerary_days.length > 0 ? (
           <div>
-            <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-6">About This Package</p>
-            <div class="prose prose-lg max-w-none text-ink-muted leading-relaxed" set:html={descriptionHtml} />
+            <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-6">Daily Timeline</p>
+            <ItineraryTimeline days={pkg.itinerary_days} />
           </div>
+        ) : (
+          descriptionHtml && (
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-6">About This Package</p>
+              <div class="prose prose-lg max-w-none text-ink-muted leading-relaxed" set:html={descriptionHtml} />
+            </div>
+          )
         )}
 
         {pkg.inclusions?.length > 0 && (
@@ -94,23 +99,55 @@ const allImages: string[] = pkg.images?.length ? pkg.images : pkg.image_url ? [p
         )}
       </div>
 
-      <!-- Right: Sticky Booking Card -->
+      <!-- Right Column: Interactive Booking Calculator Sidebar -->
       <div class="lg:col-span-1">
-        <div class="sticky top-28 bg-white rounded-3xl border border-border p-8 shadow-xl">
-          <p class="text-[10px] font-bold uppercase tracking-widest text-ink-muted mb-2">Starting From</p>
-          <p class="text-5xl font-serif text-ink mb-1">₱{pkg.price?.toLocaleString()}</p>
-          <p class="text-ink-muted text-sm mb-8">per person · {pkg.days} days</p>
+        <div class="sticky top-28 bg-white rounded-3xl border border-border p-8 shadow-xl space-y-6">
+          
+          {/* Real-time Dynamic Pricing Calculator Output Header */}
+          <div class="space-y-1">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-ink-muted">Estimated Price</p>
+            <p class="text-5xl font-serif text-ink" id="calculated-pax-price">₱{pkg.price?.toLocaleString()}</p>
+            <p class="text-ink-muted text-xs font-mono" id="calculated-total-summary">₱{pkg.price?.toLocaleString()} per person · {pkg.days} days</p>
+          </div>
 
-          <button id="detail-inquire-btn"
-            class="w-full bg-coral hover:bg-coral-dark text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 mb-4">
-            Inquire About This Package
-          </button>
-          <a href="/contact"
-            class="w-full block text-center border border-border hover:border-teal text-ink-muted hover:text-teal font-bold py-4 rounded-xl transition-all text-sm">
-            Talk to a Specialist
-          </a>
+          <div class="border-t border-border pt-6 space-y-4">
+            {/* Travel Date Input */}
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-ink-muted mb-2">1. Target Travel Date</label>
+              <input id="sidebar-travel-date" type="date" class="w-full border border-border rounded-xl p-3 text-sm outline-none focus:border-teal text-ink" />
+            </div>
 
-          <div class="mt-8 pt-8 border-t border-border space-y-3">
+            {/* Steppers */}
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-ink-muted mb-2">2. Adjust Travelers</label>
+              <div class="flex gap-2">
+                <div class="flex items-center justify-between border border-border rounded-xl px-3 py-2 flex-1 bg-surface">
+                  <button id="btn-dec-adults" class="text-ink-muted hover:text-ink px-1.5 font-bold cursor-pointer select-none">-</button>
+                  <span class="text-xs font-mono font-bold text-ink" id="lbl-adults">2 Ad</span>
+                  <button id="btn-inc-adults" class="text-ink-muted hover:text-ink px-1.5 font-bold cursor-pointer select-none">+</button>
+                </div>
+                <div class="flex items-center justify-between border border-border rounded-xl px-3 py-2 flex-1 bg-surface">
+                  <button id="btn-dec-children" class="text-ink-muted hover:text-ink px-1.5 font-bold cursor-pointer select-none">-</button>
+                  <span class="text-xs font-mono font-bold text-ink" id="lbl-children">0 Ch</span>
+                  <button id="btn-inc-children" class="text-ink-muted hover:text-ink px-1.5 font-bold cursor-pointer select-none">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Calculator CTA Buttons */}
+          <div class="space-y-3">
+            <button id="detail-inquire-btn"
+              class="w-full bg-coral hover:bg-coral-dark text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:-translate-y-0.5 cursor-pointer">
+              Book this Journey
+            </button>
+            <a href="/contact"
+              class="w-full block text-center border border-border hover:border-teal text-ink-muted hover:text-teal font-bold py-4 rounded-xl transition-all text-sm">
+              Custom Quote
+            </a>
+          </div>
+
+          <div class="pt-6 border-t border-border space-y-3">
             <div class="flex justify-between text-sm">
               <span class="text-ink-muted">Destination</span>
               <span class="font-medium text-ink">{pkg.region}</span>
@@ -129,52 +166,90 @@ const allImages: string[] = pkg.images?.length ? pkg.images : pkg.image_url ? [p
 
     </div>
   </main>
+
+  <!-- Hidden metadata bridge to compiled script below -->
+  <div id="package-metadata" 
+       data-id={pkg.id} 
+       data-title={pkg.title} 
+       data-price={pkg.price} 
+       data-images={JSON.stringify(allImages)} 
+       hidden>
+  </div>
+
+  <!-- Sticky Mobile Booking Bar (Hidden on Desktop) -->
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-t border-border p-4 shadow-2xl flex items-center justify-between lg:hidden animate-fade-in">
+    <div>
+      <p class="text-[9px] uppercase tracking-widest text-ink-muted leading-none">Starting From</p>
+      <p class="text-xl font-serif text-ink font-semibold">₱{pkg.price?.toLocaleString()}</p>
+      <p class="text-ink-muted text-[10px]">{pkg.days} Days</p>
+    </div>
+    <button id="mobile-sticky-book-btn" class="bg-coral hover:bg-coral-dark text-white font-bold py-3 px-6 rounded-xl text-xs uppercase tracking-wider shadow-md cursor-pointer">
+      Book Now
+    </button>
+  </div>
 </PublicLayout>
 
-<script define:vars={{ pkgId: pkg.id, pkgTitle: pkg.title, allImages }}>
-  import { openInquiryModal } from '../../lib/store';
+<script>
+  import { openInquiryModal } from '@lib/store';
+  import { initGalleryLightbox } from '@lib/gallery_lightbox.js';
 
-  // Inquire button
-  document.getElementById('detail-inquire-btn')
-    ?.addEventListener('click', () => openInquiryModal(pkgId, pkgTitle));
+  // Hydrate logic only if elements and metadata exist
+  const metaEl = document.getElementById('package-metadata');
+  if (metaEl) {
+    const pkgId = metaEl.dataset.id;
+    const pkgTitle = metaEl.dataset.title;
+    const pkgPrice = parseFloat(metaEl.dataset.price || '0');
+    const allImages = JSON.parse(metaEl.dataset.images || '[]');
 
-  // Lightbox
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-  let currentIndex = 0;
+    const travelDateInput = document.getElementById('sidebar-travel-date') as HTMLInputElement;
+    const btnDecAdults = document.getElementById('btn-dec-adults');
+    const btnIncAdults = document.getElementById('btn-inc-adults');
+    const btnDecChildren = document.getElementById('btn-dec-children');
+    const btnIncChildren = document.getElementById('btn-inc-children');
+    const lblAdults = document.getElementById('lbl-adults');
+    const lblChildren = document.getElementById('lbl-children');
+    const calculatedPriceHeader = document.getElementById('calculated-pax-price');
+    const calculatedTotalSummary = document.getElementById('calculated-total-summary');
 
-  document.querySelectorAll('.gallery-item').forEach(item => {
-    item.addEventListener('click', () => {
-      currentIndex = parseInt(item.dataset.index);
-      lightboxImg.src = allImages[currentIndex];
-      lightbox.classList.remove('hidden');
+    let adults = 2;
+    let children = 0;
+
+    function updateCalculator() {
+      const totalPax = adults + children;
+      const totalEstimate = pkgPrice * totalPax;
+      
+      if (lblAdults) lblAdults.textContent = `${adults} Ad`;
+      if (lblChildren) lblChildren.textContent = `${children} Ch`;
+      
+      if (calculatedPriceHeader) {
+        calculatedPriceHeader.textContent = `₱${totalEstimate.toLocaleString()}`;
+      }
+      if (calculatedTotalSummary) {
+        calculatedTotalSummary.textContent = `Estimated total for ${totalPax} guest${totalPax !== 1 ? 's' : ''}`;
+      }
+    }
+
+    btnDecAdults?.addEventListener('click', () => { if (adults > 1) { adults--; updateCalculator(); } });
+    btnIncAdults?.addEventListener('click', () => { adults++; updateCalculator(); });
+    btnDecChildren?.addEventListener('click', () => { if (children > 0) { children--; updateCalculator(); } });
+    btnIncChildren?.addEventListener('click', () => { children++; updateCalculator(); });
+
+    // Initial load calculation
+    updateCalculator();
+
+    // Trigger modal and pass values cleanly through the store
+    document.getElementById('detail-inquire-btn')?.addEventListener('click', () => {
+      const dateVal = travelDateInput?.value || '';
+      openInquiryModal(pkgId, pkgTitle, dateVal, adults, children);
     });
-  });
 
-  document.getElementById('lightbox-close')?.addEventListener('click', () => {
-    lightbox.classList.add('hidden');
-  });
-
-  document.getElementById('lightbox-prev')?.addEventListener('click', () => {
-    currentIndex = currentIndex > 0 ? currentIndex - 1 : allImages.length - 1;
-    lightboxImg.src = allImages[currentIndex];
-  });
-
-  document.getElementById('lightbox-next')?.addEventListener('click', () => {
-    currentIndex = currentIndex < allImages.length - 1 ? currentIndex + 1 : 0;
-    lightboxImg.src = allImages[currentIndex];
-  });
-
-  // Close on backdrop click
-  lightbox?.addEventListener('click', (e) => {
-    if (e.target === lightbox) lightbox.classList.add('hidden');
-  });
-
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (lightbox.classList.contains('hidden')) return;
-    if (e.key === 'Escape') lightbox.classList.add('hidden');
-    if (e.key === 'ArrowLeft') document.getElementById('lightbox-prev')?.click();
-    if (e.key === 'ArrowRight') document.getElementById('lightbox-next')?.click();
-  });
+    // Initialize gallery lightbox
+    initGalleryLightbox(allImages);
+    
+    document.getElementById('mobile-sticky-book-btn')?.addEventListener('click', () => {
+      const dateVal = travelDateInput?.value || '';
+      openInquiryModal(pkgId, pkgTitle, dateVal, adults, children);
+    });
+  }
+  
 </script>

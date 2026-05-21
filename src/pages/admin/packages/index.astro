@@ -1,6 +1,6 @@
 ---
-import AdminLayout from '../../../layouts/admin_layout.astro';
-import { supabase } from '../../../lib/supabase_client';
+import AdminLayout from '@layouts/AdminLayout.astro';
+import { supabase } from '@lib/supabase_client';
 
 const { data: packages } = await supabase
   .from('packages')
@@ -9,89 +9,50 @@ const { data: packages } = await supabase
 ---
 
 <AdminLayout title="Tour Catalog">
-  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px;">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12">
     <div>
-      <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 48px; margin: 0 0 16px;">Magazine Catalog</h1>
-      <p style="color: #4b5563; margin: 0;">Manage the featured journeys and destinations in your digital edition.</p>
+      <h1 class="font-serif text-5xl mb-4 text-ink">Magazine Catalog</h1>
+      <p class="text-ink-muted max-w-lg leading-relaxed text-sm">Manage the featured journeys and destinations in your digital edition.</p>
     </div>
-    <a href="/admin/packages/new" class="add-btn">+ Add New Journey</a>
+    <a href="/admin/packages/new" class="bg-teal hover:bg-ink text-white py-3 px-6 rounded-xl font-bold text-sm transition-all shadow-md hover:-translate-y-0.5">
+      + Add New Journey
+    </a>
   </div>
 
-  <div class="package-list">
+  <div class="flex flex-col gap-4">
     {packages?.map((pkg) => (
-      <div class="package-row">
-        <img src={pkg.image_url} alt="" class="row-img" />
-        <div class="row-content">
-          <div class="row-meta">
-            <span class="region-tag">{pkg.region}</span>
-            <span class="days-tag">{pkg.days} DAYS</span>
+      <div class="bg-white border border-border rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-6 hover:border-teal transition-colors duration-200">
+        <img src={pkg.image_url} alt="" class="w-20 h-20 rounded-xl object-cover flex-shrink-0" />
+        
+        <div class="flex-1 space-y-1.5 text-center sm:text-left">
+          <div class="flex flex-wrap justify-center sm:justify-start gap-2 items-center">
+            <span class="text-[9px] font-bold text-teal bg-teal-pale px-2.5 py-0.5 rounded uppercase tracking-wider">{pkg.region}</span>
+            <span class="text-[10px] font-mono font-bold text-ink-muted/70">{pkg.days} DAYS</span>
           </div>
-          <h3 class="row-title">{pkg.title}</h3>
+          <h3 class="font-serif text-2xl text-ink leading-tight">{pkg.title}</h3>
         </div>
-        <div class="row-price">₱{pkg.price.toLocaleString()}</div>
-        <div class="row-actions">
-          <a href={`/admin/packages/edit/${pkg.id}`} class="action-btn" style="text-decoration: none;">Edit</a>
-          <button class="action-btn delete" data-id={pkg.id} data-title={pkg.title}>Delete</button>
+        
+        <div class="font-mono font-bold text-teal text-lg">
+          ₱{pkg.price.toLocaleString()}
+        </div>
+        
+        <div class="flex gap-2">
+          <a href={`/admin/packages/edit/${pkg.id}`} class="bg-surface hover:bg-teal hover:text-white border border-border hover:border-teal py-2.5 px-4 rounded-xl text-xs font-bold text-ink transition-all">
+            Edit
+          </a>
+          <button class="bg-surface hover:bg-red-50 hover:text-red-600 border border-border hover:border-red-200 py-2.5 px-4 rounded-xl text-xs font-bold text-ink-muted hover:border-red-200 cursor-pointer delete transition-all" data-id={pkg.id} data-title={pkg.title}>
+            Delete
+          </button>
         </div>
       </div>
     ))}
   </div>
-
-  <style>
-    .add-btn {
-      background: #1a6b6b;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-    .add-btn:hover { background: #0d1117; transform: translateY(-2px); }
-
-    .package-list { display: flex; flex-direction: column; gap: 16px; }
-
-    .package-row {
-      background: white;
-      border: 1px solid #e2ddd7;
-      border-radius: 20px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      transition: border-color 0.2s;
-    }
-    .package-row:hover { border-color: #1a6b6b; }
-
-    .row-img { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; }
-
-    .row-content { flex: 1; }
-    .row-meta { display: flex; gap: 8px; margin-bottom: 4px; }
-    .region-tag { font-size: 10px; font-weight: bold; color: #1a6b6b; background: #e6f4f4; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
-    .days-tag { font-size: 10px; font-weight: bold; color: #4b5563; padding: 2px 0; }
-    .row-title { margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 20px; }
-
-    .row-price { font-family: 'DM Mono', monospace; font-weight: bold; color: #1a6b6b; }
-
-    .row-actions { display: flex; gap: 8px; }
-    .action-btn {
-      background: #fafaf8;
-      border: 1px solid #e2ddd7;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .action-btn.delete:hover { color: #dc2626; border-color: #dc2626; }
-  </style>
 </AdminLayout>
 
 <script>
   import { supabase } from '../../../lib/supabase_client';
 
-  const deleteButtons = document.querySelectorAll('.action-btn.delete');
+  const deleteButtons = document.querySelectorAll('.delete');
 
   deleteButtons.forEach(button => {
     button.addEventListener('click', async (e) => {

@@ -1,86 +1,33 @@
 ---
-import '../../styles/global.css';
+import '@styles/global.css';
 ---
 
-<div class="login-page">
-  <div class="login-card">
-    <div class="login-header">
-      <h1>Admin Login</h1>
-      <p>EDITOR'S DESK ACCESS</p>
+<div class="min-h-screen w-screen bg-surface flex items-center justify-center font-sans px-4">
+  <div class="w-full max-w-[400px] bg-white rounded-3xl shadow-xl border border-border overflow-hidden">
+    <div class="p-10 pb-6 text-center">
+      <h1 class="font-serif text-3xl mb-2 text-ink">Admin Login</h1>
+      <p class="text-[10px] font-bold tracking-[0.25em] text-gray-500 uppercase">Editor's Desk Access</p>
     </div>
 
-    <form id="login-form" class="login-form">
-      <div class="input-group">
-        <label>Email Address</label>
-        <input required type="email" name="email" placeholder="admin@gcj.edition" />
+    <form id="login-form" class="px-10 pb-10 flex flex-col gap-6">
+      <div class="flex flex-col gap-2">
+        <label class="text-[10px] font-bold tracking-wider text-gray-500 uppercase">Email Address</label>
+        <input required type="email" name="email" placeholder="admin@gcj.edition" class="p-4 bg-surface border border-border rounded-xl outline-none text-sm text-ink focus:border-teal transition-colors" />
       </div>
-      <div class="input-group">
-        <label>Security Key</label>
-        <input required type="password" name="password" placeholder="••••••••" />
+      <div class="flex flex-col gap-2">
+        <label class="text-[10px] font-bold tracking-wider text-gray-500 uppercase">Security Key</label>
+        <input required type="password" name="password" placeholder="••••••••" class="p-4 bg-surface border border-border rounded-xl outline-none text-sm text-ink focus:border-teal transition-colors" />
       </div>
-      <button type="submit" class="submit-btn">Sign In to Dashboard</button>
+      <button type="submit" class="bg-ink hover:bg-teal text-white py-4 rounded-xl font-bold text-sm tracking-wider uppercase transition-colors duration-200 cursor-pointer">
+        Sign In to Dashboard
+      </button>
     </form>
 
-    <div class="login-footer">
-      <a href="/">&larr; BACK TO MAGAZINE</a>
+    <div class="p-5 bg-sand text-center border-t border-border">
+      <a href="/" class="text-[10px] font-bold text-gray-500 hover:text-teal transition-colors tracking-widest">&larr; BACK TO MAGAZINE</a>
     </div>
   </div>
 </div>
-
-<style>
-  .login-page {
-    min-height: 100vh;
-    width: 100vw;
-    background-color: #fafaf8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .login-card {
-    width: 100%;
-    max-width: 400px;
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-    border: 1px solid #e2ddd7;
-    overflow: hidden;
-  }
-
-  .login-header { padding: 40px 40px 20px; text-align: center; }
-  .login-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 32px; margin: 0 0 8px; }
-  .login-header p { font-size: 10px; font-weight: bold; letter-spacing: 0.2em; color: #4b5563; margin: 0; }
-
-  .login-form { padding: 0 40px 40px; display: flex; flex-direction: column; gap: 24px; }
-  
-  .input-group { display: flex; flex-direction: column; gap: 8px; }
-  .input-group label { font-size: 10px; font-weight: bold; letter-spacing: 0.1em; color: #4b5563; text-transform: uppercase; }
-  .input-group input { 
-    padding: 16px; 
-    background: #fafaf8; 
-    border: 1px solid #e2ddd7; 
-    border-radius: 12px; 
-    outline: none; 
-    font-size: 14px;
-  }
-  .input-group input:focus { border-color: #1a6b6b; }
-
-  .submit-btn {
-    background: #0d1117;
-    color: white;
-    padding: 18px;
-    border: none;
-    border-radius: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .submit-btn:hover { background: #1a6b6b; }
-
-  .login-footer { padding: 20px; background: #f5f0e8; text-align: center; border-top: 1px solid #e2ddd7; }
-  .login-footer a { font-size: 10px; font-weight: bold; color: #4b5563; text-decoration: none; letter-spacing: 0.1em; }
-</style>
 
 <script>
   import { supabase } from '../../lib/supabase_client';

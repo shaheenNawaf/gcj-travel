@@ -1,15 +1,26 @@
 @import "tailwindcss";
+@import "./home.css";
+@import "./admin.css";
+
+/* Fallback default brand variables mapped to CSS custom properties */
+:root {
+  --brand-primary: #1a6b6b;
+  --brand-primary-dark: #124d4d;
+  --brand-primary-pale: #e6f4f4;
+  --brand-accent: #e8562a;
+  --brand-accent-dark: #c94420;
+  --brand-secondary: #c9983a;
+}
 
 @theme {
-  /* Brand Colors */
-  --color-teal: #1a6b6b;
-  --color-teal-dark: #124d4d;
-  --color-teal-pale: #e6f4f4;
+  --color-teal: var(--brand-primary, #1a6b6b);
+  --color-teal-dark: var(--brand-primary-dark, #124d4d);
+  --color-teal-pale: var(--brand-primary-pale, #e6f4f4);
   
-  --color-coral: #e8562a;
-  --color-coral-dark: #c94420;
+  --color-coral: var(--brand-accent, #e8562a);
+  --color-coral-dark: var(--brand-accent-dark, #c94420);
   
-  --color-gold: #c9983a;
+  --color-gold: var(--brand-secondary, #c9983a);
   --color-gold-pale: #fdf6e3;
 
   --color-ink: #0d1117;
@@ -20,32 +31,97 @@
   --color-sand: #f5f0e8;
   --color-border: #e2ddd7;
 
-  /* Fonts */
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "DM Sans", sans-serif;
   --font-mono: "DM Mono", monospace;
-
-  /* Spacing & Radius */
-  --radius-lg: 12px;
-  --radius-xl: 16px;
 }
 
-/* Base Styles */
-@layer base {
-  body {
-    @apply bg-surface text-ink font-sans antialiased;
-  }
-  
-  h1, h2, h3, .display-serif {
-    @apply font-serif leading-tight;
-  }
+/* ──────────────────────────────────────────────────────────
+   FLOATING ACTION BUTTON TRANSITIONS
+   ────────────────────────────────────────────────────────── */
+
+#quote-btn, #scroll-top {
+  position: fixed;
+  right: 24px;
+  z-index: 50;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
 }
 
-@keyframes kenBurns {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.08); }
+#quote-btn {
+  bottom: 204px;
+  background: #e8562a;
+  color: white;
+  border: none;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
 }
 
-.animate-ken-burns {
-  animation: kenBurns 12s ease-in-out infinite alternate;
+#quote-btn.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+#quote-btn:hover {
+  background: #c94420;
+}
+
+#scroll-top {
+  bottom: 92px;
+  background: #0d1117;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.1);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+#scroll-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+#scroll-top:hover {
+  background: #1a6b6b;
+  border-color: #1a6b6b;
+}
+
+#whatsapp-btn {
+  position: fixed;
+  bottom: 148px;
+  right: 24px;
+  z-index: 50;
+  width: 44px;
+  height: 44px;
+  background: #25D366;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#whatsapp-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+}
+
+/* Micro-interactions & subtle image gallery hover glow overlays */
+.gallery-item {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.gallery-item:hover {
+  box-shadow: 0 10px 25px rgba(26, 107, 107, 0.12);
+  transform: translateY(-2px);
 }

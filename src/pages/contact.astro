@@ -1,5 +1,5 @@
 ---
-import PublicLayout from '../layouts/public_layout.astro';
+import PublicLayout from '../layouts/PublicLayout.astro';
 import { siteConfig } from '../config/site';
 ---
 
@@ -8,7 +8,7 @@ import { siteConfig } from '../config/site';
     <div class="container mx-auto px-6">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
 
-        <!-- Left: Contact Info -->
+        <!-- Left: Contact Details -->
         <div>
           <h1 class="text-6xl font-serif mb-8 text-ink">Get in <span class="italic">Touch</span></h1>
           <p class="text-ink-muted text-xl mb-12 leading-relaxed">Our travel specialists are ready to help you plan your next heartbeat moment.</p>
@@ -30,52 +30,77 @@ import { siteConfig } from '../config/site';
               <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-teal mb-2">Find Us</p>
               <p class="text-2xl font-serif">{siteConfig.contact.address}</p>
             </div>
-            <div class="flex gap-4 pt-4">
-              <a href={siteConfig.contact.facebook} class="w-10 h-10 rounded-full border border-border flex items-center justify-center text-ink-muted hover:text-teal hover:border-teal transition-all text-xs font-bold">FB</a>
-              <a href={siteConfig.contact.instagram} class="w-10 h-10 rounded-full border border-border flex items-center justify-center text-ink-muted hover:text-teal hover:border-teal transition-all text-xs font-bold">IG</a>
-            </div>
           </div>
         </div>
 
-        <!-- Right: Inquiry Form -->
+        <!-- Right: Dynamic Inquiry Form with Steppers -->
         <div class="bg-sand rounded-3xl p-12 border border-border">
-          <h2 class="text-3xl font-serif mb-2">Send us a Message</h2>
-          <p class="text-ink-muted text-sm mb-8">We'll get back to you within 24 hours.</p>
+          <h2 class="text-3xl font-serif mb-2">Request Itinerary Quote</h2>
+          <p class="text-ink-muted text-sm mb-8">Let us know your plans. We will customize your pricing and details.</p>
 
           <div id="form-success" class="hidden text-center py-10">
             <div class="w-16 h-16 bg-teal-pale text-teal rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">✓</div>
-            <h3 class="text-xl font-bold mb-2">Message Sent!</h3>
-            <p class="text-ink-muted">We'll be in touch shortly.</p>
+            <h3 class="text-xl font-bold mb-2">Request Received!</h3>
+            <p class="text-ink-muted">A specialist will customize your quotation and respond shortly.</p>
           </div>
 
           <form id="contact-form" class="space-y-6">
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Full Name</label>
-              <input required name="name" type="text" placeholder="Juan Dela Cruz"
-                class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Full Name</label>
+                <input required name="name" type="text" placeholder="Juan Dela Cruz"
+                  class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all text-sm" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Email Address</label>
+                <input required name="email" type="email" placeholder="juan@example.com"
+                  class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all text-sm" />
+              </div>
             </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Email Address</label>
-              <input required name="email" type="email" placeholder="juan@example.com"
-                class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all" />
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Proposed Travel Date</label>
+                <input required name="travel_date" type="date"
+                  class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all text-sm text-ink" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Interest Type</label>
+                <select name="package_title" class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all text-sm text-ink cursor-pointer">
+                  <option value="Custom Itinerary Quote">Custom Itinerary Quote</option>
+                  <option value="Domestic Package Quote">Domestic Package Quote</option>
+                  <option value="International Package Quote">International Package Quote</option>
+                  <option value="General Agency Inquiry">General Agency Inquiry</option>
+                </select>
+              </div>
             </div>
+
+            <!-- Custom Guest Counters Stepper inside Contact Form -->
             <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Interest</label>
-              <select name="package_title" class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all">
-                <option value="General Inquiry">General Inquiry</option>
-                <option value="Domestic Package">Domestic Package</option>
-                <option value="International Package">International Package</option>
-                <option value="Custom Package">Custom Package</option>
-              </select>
+              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Adjust Travelers Count</label>
+              <div class="flex gap-4">
+                <div class="flex items-center justify-between border border-border bg-white rounded-xl px-4 py-3 flex-1">
+                  <button type="button" id="form-dec-adults" class="text-ink-muted hover:text-ink px-2 font-bold cursor-pointer select-none">-</button>
+                  <span class="text-sm font-mono font-bold text-ink" id="form-lbl-adults">2 Adult(s)</span>
+                  <button type="button" id="form-inc-adults" class="text-ink-muted hover:text-ink px-2 font-bold cursor-pointer select-none">+</button>
+                </div>
+                <div class="flex items-center justify-between border border-border bg-white rounded-xl px-4 py-3 flex-1">
+                  <button type="button" id="form-dec-children" class="text-ink-muted hover:text-ink px-2 font-bold cursor-pointer select-none">-</button>
+                  <span class="text-sm font-mono font-bold text-ink" id="form-lbl-children">0 Child(ren)</span>
+                  <button type="button" id="form-inc-children" class="text-ink-muted hover:text-ink px-2 font-bold cursor-pointer select-none">+</button>
+                </div>
+              </div>
             </div>
+
             <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Message</label>
-              <textarea required name="message" rows="4" placeholder="Tell us about your dream trip..."
-                class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all resize-none"></textarea>
+              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 text-ink-muted">Message / Special Requests</label>
+              <textarea required name="user_message" rows="4" placeholder="Describe your dream vacation, desired destinations, inclusions, or accommodation tier..."
+                class="w-full border border-border rounded-xl p-4 bg-white focus:ring-2 focus:ring-teal outline-none transition-all resize-none text-sm leading-relaxed"></textarea>
             </div>
+
             <button type="submit" id="contact-submit"
-              class="w-full bg-ink hover:bg-teal text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98]">
-              Send Message
+              class="w-full bg-ink hover:bg-teal text-white font-bold py-4 rounded-xl transition-all shadow-lg cursor-pointer">
+              Send Request
             </button>
           </form>
         </div>
@@ -92,15 +117,48 @@ import { siteConfig } from '../config/site';
   const success = document.getElementById('form-success');
   const submitBtn = document.getElementById('contact-submit');
 
+  // Client Side Guest Steppers logic hydration
+  const decAd = document.getElementById('form-dec-adults');
+  const incAd = document.getElementById('form-inc-adults');
+  const decCh = document.getElementById('form-dec-children');
+  const incCh = document.getElementById('form-inc-children');
+  const lblAd = document.getElementById('form-lbl-adults');
+  const lblCh = document.getElementById('form-lbl-children');
+
+  let adults = 2;
+  let children = 0;
+
+  function updateFormLabels() {
+    if (lblAd) lblAd.textContent = `${adults} Adult(s)`;
+    if (lblCh) lblCh.textContent = `${children} Child(ren)`;
+  }
+
+  decAd?.addEventListener('click', () => { if (adults > 1) { adults--; updateFormLabels(); } });
+  incAd?.addEventListener('click', () => { adults++; updateFormLabels(); });
+  decCh?.addEventListener('click', () => { if (children > 0) { children--; updateFormLabels(); } });
+  incCh?.addEventListener('click', () => { children++; updateFormLabels(); });
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (submitBtn) submitBtn.textContent = 'Sending...';
+    if (submitBtn) submitBtn.textContent = 'Sending Custom Request...';
 
     const formData = new FormData(form);
+    const rawMessage = formData.get('user_message');
+    const proposedDate = formData.get('travel_date');
+
+    // Compile dynamic guests parameters into backward-compatible text payload
+    const compiledMessage = `
+[Proposed Date]: ${proposedDate || 'Flexible'}
+[Travelers Profile]: ${adults} Adult(s), ${children} Child(ren)
+─────────────────────────────────────────────
+[Custom Specifications]:
+${rawMessage}
+    `.trim();
+
     const payload = {
       name: formData.get('name'),
       email: formData.get('email'),
-      message: formData.get('message'),
+      message: compiledMessage,
       package_title: formData.get('package_title'),
       package_id: null,
     };
@@ -108,8 +166,8 @@ import { siteConfig } from '../config/site';
     const { error } = await supabase.from('inquiries').insert([payload]);
 
     if (error) {
-      alert('Error: ' + error.message);
-      if (submitBtn) submitBtn.textContent = 'Send Message';
+      alert('Error submitting custom quote request: ' + error.message);
+      if (submitBtn) submitBtn.textContent = 'Send Request';
     } else {
       form.classList.add('hidden');
       success?.classList.remove('hidden');

@@ -1,6 +1,6 @@
 ---
-import PublicLayout from '../layouts/public_layout.astro';
-import PackageCard from '../components/package_card.astro';
+import PublicLayout from '../layouts/PublicLayout.astro';
+import PackageCard from '../components/PackageCard.astro';
 import { supabase } from '../lib/supabase_client';
 import { siteConfig } from '../config/site';
 
@@ -14,85 +14,53 @@ if (error) console.error('Supabase Error:', error);
 const featured = packages?.filter(p => p.is_featured) ?? [];
 const allPackages = packages ?? [];
 
-// Build unique regions and tour types for search suggestions
 const regions = [...new Set(allPackages.map(p => p.region).filter(Boolean))];
 const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))];
 ---
 
 <PublicLayout title="Follow Your Heartbeat">
   <main>
-
-    <!-- ═══════════════════════════════════════════
-         HERO — Full-bleed with search overlay
-    ════════════════════════════════════════════ -->
-    <section class="hero">
-      <!-- Background image with Ken Burns -->
-      <div class="hero-bg">
+    <!-- Centered Editorial Hero Block -->
+    <section class="relative h-screen min-h-[680px] flex items-center justify-center overflow-hidden">
+      <div class="absolute inset-0 z-0">
         <img
           src="https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=2400"
           alt="Palawan Paradise"
-          class="hero-img"
+          class="w-full h-full object-cover animate-kb"
         />
-        <div class="hero-scrim"></div>
-        <!-- Floating destination badges -->
-        <div class="dest-badge" style="top:22%;left:18%">
-          <span class="dest-dot"></span> El Nido, Palawan
-        </div>
-        <div class="dest-badge" style="top:55%;left:72%">
-          <span class="dest-dot"></span> Siargao, Surigao
-        </div>
-        <div class="dest-badge" style="top:38%;left:58%">
-          <span class="dest-dot"></span> Bohol, Visayas
-        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/55 to-ink/30"></div>
       </div>
 
-      <!-- Hero content -->
-      <div class="hero-content">
-        <div class="hero-eyebrow">
-          <span class="eyebrow-dot"></span>
-          IATA ACCREDITED · DOT LICENSED
+      <div class="relative z-10 w-full max-w-5xl mx-auto px-6 pt-20 flex flex-col items-center text-center space-y-10">
+        <div class="space-y-4">
+          <h1 class="font-serif text-6xl md:text-8xl text-white font-light leading-none animate-slide text-center select-none">
+            {siteConfig.brand.tagline.split(' ')[0]}<br/>
+            <em class="font-normal italic text-white/75">{siteConfig.brand.tagline.split(' ').slice(1).join(' ')}</em>
+          </h1>
+          <p class="text-white/65 text-lg animate-slide max-w-lg mx-auto">{siteConfig.brand.description}</p>
         </div>
 
-        <h1 class="hero-headline">
-          {siteConfig.brand.tagline.split(' ')[0]}<br/>
-          <em>{siteConfig.brand.tagline.split(' ').slice(1).join(' ')}</em>
-        </h1>
-
-        <p class="hero-sub">{siteConfig.brand.description}</p>
-
-        <!-- ── SEARCH BOX ── -->
-        <div class="search-card" id="hero-search-card">
-          <div class="search-tabs">
-            <button class="stab active" data-tab="all">All</button>
-            <button class="stab" data-tab="domestic">Domestic 🇵🇭</button>
-            <button class="stab" data-tab="international">International ✈️</button>
+        <!-- Centered & Expanded Search Card with Wider Input Area [1] -->
+        <div class="w-full bg-white/95 backdrop-blur-lg rounded-2xl overflow-hidden shadow-2xl animate-slide border border-border mx-auto" id="hero-search-card">
+          <div class="flex border-b border-border px-5 bg-sand/35">
+            <button class="stab py-4 px-5 text-xs font-bold tracking-wider text-teal border-b-2 border-teal transition-all cursor-pointer uppercase" data-tab="all">All</button>
+            <button class="stab py-4 px-5 text-xs font-bold tracking-wider text-ink-muted/60 border-b-2 border-transparent transition-all hover:text-ink cursor-pointer uppercase" data-tab="domestic">Domestic 🇵🇭</button>
+            <button class="stab py-4 px-5 text-xs font-bold tracking-wider text-ink-muted/60 border-b-2 border-transparent transition-all hover:text-ink cursor-pointer uppercase" data-tab="international">International ✈️</button>
           </div>
 
-          <div class="search-row">
-            <!-- Keyword input -->
-            <div class="sf sf-keyword">
-              <p class="sf-icon">🔍</p>
-              <input
-                id="hero-search-input"
-                type="text"
-                placeholder="Where do you want to go?"
-                autocomplete="off"
-              />
-              <!-- Suggestions dropdown -->
-              <div class="suggestions" id="suggestions" hidden>
-                <div class="sug-group" id="sug-destinations">
-                  <p class="sug-label">Destinations</p>
-                </div>
-                <div class="sug-group" id="sug-types">
-                  <p class="sug-label">Tour Types</p>
-                </div>
+          <div class="grid grid-cols-1 md:grid-cols-[1.8fr_1fr_1fr_1fr] items-stretch">
+            <div class="relative flex items-center gap-2.5 py-4 px-6 border-r border-border bg-white">
+              <span class="text-base">🔍</span>
+              <input id="hero-search-input" type="text" placeholder="Where to?" autocomplete="off" class="w-full text-sm text-ink outline-none bg-transparent" />
+              <div class="absolute top-[calc(100%+4px)] left-0 right-0 bg-white rounded-xl shadow-xl border border-border z-50 overflow-hidden" id="suggestions" hidden>
+                <div id="sug-destinations"></div>
+                <div id="sug-types"></div>
               </div>
             </div>
 
-            <!-- Duration filter -->
-            <div class="sf sf-duration">
-              <p class="sf-icon">🗓️</p>
-              <select id="hero-duration-select">
+            <div class="flex items-center gap-2.5 py-4 px-6 border-r border-border bg-white">
+              <span class="text-base">🗓️</span>
+              <select id="hero-duration-select" class="w-full text-sm text-ink bg-transparent outline-none cursor-pointer">
                 <option value="">Any duration</option>
                 <option value="1-3">1-3 days</option>
                 <option value="4-6">4-6 days</option>
@@ -101,10 +69,9 @@ const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))
               </select>
             </div>
 
-            <!-- Budget filter -->
-            <div class="sf sf-budget">
-              <p class="sf-icon">💰</p>
-              <select id="hero-budget-select">
+            <div class="flex items-center gap-2.5 py-4 px-6 bg-white">
+              <span class="text-base">💰</span>
+              <select id="hero-budget-select" class="w-full text-sm text-ink bg-transparent outline-none cursor-pointer">
                 <option value="">Any budget</option>
                 <option value="0-5000">Under ₱5,000</option>
                 <option value="5000-15000">₱5,000–₱15,000</option>
@@ -113,748 +80,142 @@ const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))
               </select>
             </div>
 
-            <button class="search-btn" id="hero-search-btn">
+            <button class="bg-teal hover:bg-teal-dark text-white font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer py-4 px-7 text-center" id="hero-search-btn">
               Search Packages
             </button>
           </div>
         </div>
 
-        <!-- Quick tags -->
-        <div class="quick-tags">
-          <span class="qt-label">Popular:</span>
-          {tourTypes.slice(0, 5).map(t => (
-            <button class="qt" data-type={t}>{t}</button>
+        <!-- destinations inlined next to Popular label [3] -->
+        <div class="flex items-center justify-center gap-2 flex-wrap text-xs animate-slide">
+          <span class="text-white/50 tracking-wider">Popular:</span>
+          {[
+            { label: 'El Nido, Palawan', val: 'El Nido' },
+            { label: 'Siargao, Surigao', val: 'Siargao' },
+            { label: 'Bohol, Visayas', val: 'Bohol' },
+            { label: 'Beach & Island', val: 'Beach & Island' },
+            { label: 'Adventure', val: 'Adventure' }
+          ].map(t => (
+            <button class="qt bg-white/12 hover:bg-teal/50 hover:border-teal border border-white/20 text-white font-semibold py-1 px-3.5 rounded-full cursor-pointer transition-all duration-200" data-type={t.val}>{t.label}</button>
           ))}
         </div>
       </div>
 
-      <!-- Scroll hint -->
-      <div class="scroll-hint">
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 text-[10px] uppercase tracking-widest">
         <span>Scroll to explore</span>
-        <div class="scroll-line"></div>
+        <div class="w-px h-10 bg-gradient-to-b from-white/40 to-transparent scroll-bar-pulse"></div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════
-         STATS STRIP
-    ════════════════════════════════════════════ -->
-    <div class="stats-strip">
-      <div class="stat">
-        <span class="stat-num">{allPackages.length}+</span>
-        <span class="stat-lbl">Active Packages</span>
+    <div id="search-metadata" data-regions={JSON.stringify(regions)} data-tourtypes={JSON.stringify(tourTypes)} hidden></div>
+
+    <div class="bg-ink flex justify-center items-center py-5 px-6 flex-wrap">
+      <div class="flex flex-col items-center px-10">
+        <span class="font-mono text-xl text-teal font-bold">{allPackages.length}+</span>
+        <span class="text-[10px] text-white/35 uppercase tracking-wider">Active Packages</span>
       </div>
-      <div class="stat-div"></div>
-      <div class="stat">
-        <span class="stat-num">{regions.length}+</span>
-        <span class="stat-lbl">Destinations</span>
+      <div class="w-px h-8 bg-white/8"></div>
+      <div class="flex flex-col items-center px-10">
+        <span class="font-mono text-xl text-teal font-bold">{regions.length}+</span>
+        <span class="text-[10px] text-white/35 uppercase tracking-wider">Destinations</span>
       </div>
-      <div class="stat-div"></div>
-      <div class="stat">
-        <span class="stat-num">24h</span>
-        <span class="stat-lbl">Response Time</span>
-      </div>
-      <div class="stat-div"></div>
-      <div class="stat">
-        <span class="stat-num">100%</span>
-        <span class="stat-lbl">IATA Accredited</span>
+      <div class="w-px h-8 bg-white/8"></div>
+      <div class="flex flex-col items-center px-10">
+        <span class="font-mono text-xl text-teal font-bold">24h</span>
+        <span class="text-[10px] text-white/35 uppercase tracking-wider">Response Time</span>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════
-         FEATURED DESTINATIONS
-    ════════════════════════════════════════════ -->
-    <section class="section-featured">
-      <div class="container">
-        <div class="section-hd">
+    <!-- Featured packages catalog -->
+    <section class="py-20 bg-surface">
+      <div class="max-w-6xl mx-auto px-6 space-y-12">
+        <div class="flex justify-between items-end">
           <div>
-            <p class="section-eyebrow">Handpicked for You</p>
-            <h2 class="section-title">Featured Journeys</h2>
+            <p class="text-[10px] font-bold tracking-[0.25em] uppercase text-teal">Handpicked for You</p>
+            <h2 class="font-serif text-5xl text-ink font-normal">Featured Journeys</h2>
           </div>
-          <a href="/packages" class="see-all">View All Packages →</a>
+          <a href="/packages" class="text-xs font-bold text-teal border-b-2 border-teal pb-0.5 hover:text-teal-dark hover:border-teal-dark transition-colors">View All Packages →</a>
         </div>
-
-        {(featured.length > 0 ? featured : allPackages).length === 0 ? (
-          <div class="empty-placeholder">
-            <p>No packages available yet. Check back soon!</p>
-          </div>
-        ) : (
-          <div class="pkg-grid">
-            {(featured.length > 0 ? featured : allPackages).slice(0, 6).map((pkg) => (
-              <PackageCard pkg={pkg} />
-            ))}
-          </div>
-        )}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {(featured.length > 0 ? featured : allPackages).slice(0, 6).map((pkg) => (
+            <PackageCard pkg={pkg} />
+          ))}
+        </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════
-         TOUR TYPE EXPLORER
-    ════════════════════════════════════════════ -->
-    <section class="section-types">
-      <div class="container">
-        <p class="section-eyebrow" style="color:var(--teal-pale)">Browse by Experience</p>
-        <h2 class="section-title" style="color:white">What Kind of Trip Are You Planning?</h2>
-        <div class="type-grid">
+    <!-- Experience Category Grid -->
+    <section class="py-24 bg-ink">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="mb-12">
+          <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-2">Browse by Experience</p>
+          <h2 class="font-serif text-5xl text-white font-light">What Kind of Trip Are You Planning?</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { label: 'Beach & Island', emoji: '🏖️', href: '/domestic' },
-            { label: 'Cultural & Heritage', emoji: '🏛️', href: '/domestic' },
-            { label: 'Adventure', emoji: '🧗', href: '/packages' },
-            { label: 'City Tour', emoji: '🌆', href: '/international' },
-            { label: 'Honeymoon', emoji: '💑', href: '/packages' },
-            { label: 'Nature & Wildlife', emoji: '🌿', href: '/packages' },
+            { label: 'Beach & Island', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600', href: '/domestic' },
+            { label: 'Cultural & Heritage', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?q=80&w=600', href: '/domestic' },
+            { label: 'Adventure Escapes', img: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=600', href: '/packages' },
+            { label: 'City Tours', img: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=600', href: '/international' },
+            { label: 'Romantic Honeymoons', img: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=600', href: '/packages' },
+            { label: 'Nature & Wildlife', img: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600', href: '/packages' },
           ].map(t => (
-            <a href={`${t.href}?type=${encodeURIComponent(t.label)}`} class="type-card">
-              <span class="type-emoji">{t.emoji}</span>
-              <span class="type-label">{t.label}</span>
-              <span class="type-arrow">→</span>
+            <a href={`${t.href}?type=${encodeURIComponent(t.label)}`} class="relative group aspect-[16/9] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-teal/5 transition-all duration-300 block hover:-translate-y-1">
+              <img src={t.img} alt={t.label} class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent"></div>
+              <div class="absolute bottom-5 left-6 right-6 flex items-center justify-between">
+                <span class="font-serif text-lg text-white font-medium">{t.label}</span>
+                <span class="text-teal text-xs opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 font-bold uppercase tracking-wider">Explore →</span>
+              </div>
             </a>
           ))}
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════
-         WHY GCJ / TRUST STRIP
-    ════════════════════════════════════════════ -->
-    <section class="section-trust">
-      <div class="container trust-grid">
-        <div class="trust-copy">
-          <p class="section-eyebrow">Why GCJ Travel?</p>
-          <h2 class="section-title">Journeys Crafted with Care</h2>
-          <p class="trust-body">
-            We're not just another booking site. GCJ Travel is a fully accredited agency with real specialists
-            who know every destination personally. No hidden fees, no surprises — just honest, memorable travel.
+    <!-- Why Choose Us Trust Section -->
+    <section class="py-24 bg-surface border-t border-border">
+      <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div class="space-y-6">
+          <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-teal">Why GCJ Travel?</p>
+          <h2 class="font-serif text-5xl text-ink font-light leading-tight">Journeys Crafted with Care</h2>
+          <p class="text-ink-muted text-base leading-relaxed">
+            We're not just another booking directory. GCJ Travel is a fully accredited agency with real specialists who know every destination personally. No hidden fees, no surprises — just honest, memorable travel.
           </p>
-          <a href="/contact" class="cta-btn">Talk to a Specialist</a>
+          <a href="/contact" class="inline-block bg-coral hover:bg-coral-dark text-white font-bold py-4 px-8 rounded-xl text-xs uppercase tracking-wider shadow-lg transition-transform hover:-translate-y-0.5">
+            Talk to a Specialist
+          </a>
         </div>
-        <div class="trust-badges">
+        
+        <div class="space-y-4">
           {[
-            { icon: '🏅', title: 'IATA Accredited', desc: 'Internationally recognised certification for travel agents' },
-            { icon: '🇵🇭', title: 'DOT Licensed', desc: 'Department of Tourism accredited agency' },
-            { icon: '🤝', title: 'PTAA Member', desc: 'Philippine Travel Agencies Association member' },
-            { icon: '📞', title: '24h Support', desc: 'We respond to every inquiry within 24 hours' },
+            { icon: '🏅', title: 'IATA Accredited', desc: 'Internationally recognised certification for premium travel agents' },
+            { icon: '🇵🇭', title: 'DOT Licensed', desc: 'Department of Tourism accredited boutique agency' },
+            { icon: '🤝', title: 'PTAA Member', desc: 'Philippine Travel Agencies Association verified member' },
+            { icon: '📞', title: '24h Support', desc: 'Our dedicated operations desk responds within 24 hours' },
           ].map(b => (
-            <div class="trust-badge">
-              <span class="trust-icon">{b.icon}</span>
+            <div class="flex gap-4 p-5 bg-white border border-border rounded-2xl hover:shadow-lg transition-all duration-300">
+              <span class="text-3xl flex-shrink-0">{b.icon}</span>
               <div>
-                <p class="trust-title">{b.title}</p>
-                <p class="trust-desc">{b.desc}</p>
+                <h4 class="font-sans text-sm font-bold text-ink mb-1">{b.title}</h4>
+                <p class="text-xs text-ink-muted leading-relaxed">{b.desc}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
     </section>
-
   </main>
 </PublicLayout>
 
-<style>
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    height: 100vh;
-    min-height: 680px;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
+<script>
+  import { initHomepageSearch } from '../lib/home_search.js';
+  
+  const metaEl = document.getElementById('search-metadata');
+  if (metaEl) {
+    const regions = JSON.parse(metaEl.dataset.regions || '[]');
+    const tourTypes = JSON.parse(metaEl.dataset.tourtypes || '[]');
+    initHomepageSearch(regions, tourTypes);
   }
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
-  .hero-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    animation: kenBurns 16s ease-in-out infinite alternate;
-  }
-  .hero-scrim {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      135deg,
-      rgba(13,17,23,0.82) 0%,
-      rgba(13,17,23,0.55) 50%,
-      rgba(13,17,23,0.3) 100%
-    );
-  }
-
-  /* Floating destination badges */
-  .dest-badge {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 6px 12px;
-    border-radius: 99px;
-    animation: floatIn 1s ease both;
-    animation-delay: 1.2s;
-    opacity: 0;
-  }
-  .dest-badge:nth-child(3) { animation-delay: 1.5s; }
-  .dest-badge:nth-child(4) { animation-delay: 1.8s; }
-  @media (max-width: 768px) { .dest-badge { display: none; } }
-
-  .dest-dot {
-    width: 7px;
-    height: 7px;
-    background: #1a6b6b;
-    border-radius: 50%;
-    box-shadow: 0 0 0 2px rgba(26,107,107,0.4);
-    animation: pulse 2s infinite;
-  }
-
-  .hero-content {
-    position: relative;
-    z-index: 10;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px;
-    padding-top: 80px;
-  }
-
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 20px;
-  }
-  .eyebrow-dot {
-    width: 6px; height: 6px;
-    background: #1a6b6b;
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  .hero-headline {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(56px, 8vw, 96px);
-    font-weight: 300;
-    color: white;
-    line-height: 1.0;
-    margin: 0 0 16px;
-    animation: slideUp 0.8s ease both;
-  }
-  .hero-headline em {
-    font-style: italic;
-    font-weight: 400;
-    color: rgba(255,255,255,0.75);
-  }
-
-  .hero-sub {
-    color: rgba(255,255,255,0.65);
-    font-size: 18px;
-    margin-bottom: 36px;
-    animation: slideUp 0.8s ease 0.1s both;
-  }
-
-  /* ── SEARCH CARD ── */
-  .search-card {
-    background: rgba(255,255,255,0.97);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.35);
-    animation: slideUp 0.8s ease 0.2s both;
-    margin-bottom: 20px;
-  }
-
-  .search-tabs {
-    display: flex;
-    border-bottom: 1px solid #f0ece6;
-    padding: 0 20px;
-  }
-  .stab {
-    background: none;
-    border: none;
-    padding: 14px 18px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: #9ca3af;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    text-transform: uppercase;
-  }
-  .stab.active {
-    color: #1a6b6b;
-    border-bottom-color: #1a6b6b;
-  }
-  .stab:hover:not(.active) { color: #374151; }
-
-  .search-row {
-    display: grid;
-    grid-template-columns: 1fr 200px 200px auto;
-    gap: 0;
-    align-items: stretch;
-  }
-  @media (max-width: 768px) {
-    .search-row {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .sf {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 16px 25px;
-    border-right: 1px solid #f0ece6;
-  }
-  .sf:last-of-type { border-right: none; }
-  .sf-icon { font-size: 16px; flex-shrink: 0; }
-
-  .sf input, .sf select {
-    width: 100%;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    color: #111827;
-    background: transparent;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .sf input::placeholder { color: #9ca3af; }
-  .sf select { cursor: pointer; color: #374151; }
-
-  .search-btn {
-    background: #1a6b6b;
-    color: white;
-    border: none;
-    padding: 0 28px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    white-space: nowrap;
-  }
-  .search-btn:hover { background: #124d4d; }
-  .search-btn:active { transform: scale(0.98); }
-  @media (max-width: 768px) {
-    .search-btn { padding: 16px; border-radius: 0 0 20px 20px; }
-  }
-
-  /* ── SUGGESTIONS DROPDOWN ── */
-  .suggestions {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.15);
-    border: 1px solid #f0ece6;
-    z-index: 100;
-    overflow: hidden;
-    animation: fadeDown 0.15s ease;
-  }
-  .sug-group { padding: 8px 0; }
-  .sug-label {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #9ca3af;
-    padding: 4px 16px;
-    margin: 0;
-  }
-  .sug-item {
-    display: block;
-    padding: 9px 16px;
-    font-size: 13px;
-    color: #374151;
-    cursor: pointer;
-    transition: background 0.1s;
-    text-align: left;
-    width: 100%;
-    border: none;
-    background: none;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .sug-item:hover { background: #f5f0e8; color: #1a6b6b; }
-
-  /* ── QUICK TAGS ── */
-  .quick-tags {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    animation: slideUp 0.8s ease 0.3s both;
-  }
-  .qt-label {
-    font-size: 11px;
-    color: rgba(255,255,255,0.5);
-    font-weight: 600;
-    letter-spacing: 0.1em;
-  }
-  .qt {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.85);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 5px 14px;
-    border-radius: 99px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .qt:hover {
-    background: rgba(26,107,107,0.5);
-    border-color: #1a6b6b;
-    color: white;
-  }
-
-  /* ── SCROLL HINT ── */
-  .scroll-hint {
-    position: absolute;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    color: rgba(255,255,255,0.4);
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    animation: fadeIn 1s ease 2s both;
-  }
-  .scroll-line {
-    width: 1px;
-    height: 40px;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
-    animation: scrollPulse 2s ease infinite;
-  }
-
-  /* ── STATS STRIP ── */
-  .stats-strip {
-    background: #0d1117;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0;
-    padding: 20px 24px;
-    flex-wrap: wrap;
-  }
-  .stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 8px 40px;
-  }
-  .stat-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 22px;
-    color: #1a6b6b;
-    font-weight: 700;
-  }
-  .stat-lbl {
-    font-size: 10px;
-    color: rgba(255,255,255,0.35);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-  .stat-div {
-    width: 1px;
-    height: 32px;
-    background: rgba(255,255,255,0.08);
-  }
-
-  /* ── FEATURED SECTION ── */
-  .section-featured {
-    padding: 80px 0;
-    background: #fafaf8;
-  }
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-  .section-hd {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 48px;
-  }
-  .section-eyebrow {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: #1a6b6b;
-    margin: 0 0 8px;
-  }
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(32px, 4vw, 48px);
-    color: #0d1117;
-    margin: 0;
-    font-weight: 400;
-  }
-  .see-all {
-    font-size: 12px;
-    font-weight: 700;
-    color: #1a6b6b;
-    text-decoration: none;
-    border-bottom: 2px solid #1a6b6b;
-    padding-bottom: 2px;
-    transition: color 0.2s;
-  }
-  .see-all:hover { color: #124d4d; border-color: #124d4d; }
-
-  .pkg-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 32px;
-  }
-  .empty-placeholder {
-    text-align: center;
-    padding: 64px;
-    color: #9ca3af;
-    border: 2px dashed #e2ddd7;
-    border-radius: 16px;
-  }
-
-  /* ── TOUR TYPES ── */
-  .section-types {
-    padding: 80px 0;
-    background: #0d1117;
-  }
-  .section-types .section-eyebrow { color: #5ca8a8; }
-  .section-types .section-title { color: white; margin-bottom: 40px; }
-
-  .type-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-top: 40px;
-  }
-  @media (max-width: 768px) {
-    .type-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 480px) {
-    .type-grid { grid-template-columns: 1fr; }
-  }
-  .type-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 20px 24px;
-    text-decoration: none;
-    transition: all 0.2s;
-    color: white;
-  }
-  .type-card:hover {
-    background: rgba(26,107,107,0.2);
-    border-color: rgba(26,107,107,0.4);
-    transform: translateY(-2px);
-  }
-  .type-emoji { font-size: 24px; }
-  .type-label { flex: 1; font-size: 14px; font-weight: 600; }
-  .type-arrow { font-size: 16px; opacity: 0.4; transition: opacity 0.2s, transform 0.2s; }
-  .type-card:hover .type-arrow { opacity: 1; transform: translateX(4px); }
-
-  /* ── TRUST SECTION ── */
-  .section-trust {
-    padding: 80px 0;
-    background: #fafaf8;
-  }
-  .trust-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-    align-items: center;
-  }
-  @media (max-width: 768px) {
-    .trust-grid { grid-template-columns: 1fr; gap: 40px; }
-  }
-  .trust-body {
-    color: #4b5563;
-    font-size: 16px;
-    line-height: 1.75;
-    margin: 20px 0 32px;
-  }
-  .cta-btn {
-    display: inline-block;
-    background: #e8562a;
-    color: white;
-    text-decoration: none;
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition: all 0.2s;
-    box-shadow: 0 8px 24px rgba(232,86,42,0.25);
-  }
-  .cta-btn:hover {
-    background: #c94420;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(232,86,42,0.35);
-  }
-  .trust-badges {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .trust-badge {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 20px 24px;
-    background: white;
-    border-radius: 14px;
-    border: 1px solid #e2ddd7;
-    transition: box-shadow 0.2s;
-  }
-  .trust-badge:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.07); }
-  .trust-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
-  .trust-title { font-size: 14px; font-weight: 700; color: #0d1117; margin: 0 0 4px; }
-  .trust-desc { font-size: 12px; color: #6b7280; margin: 0; line-height: 1.5; }
-
-  /* ── KEYFRAMES ── */
-  @keyframes kenBurns {
-    from { transform: scale(1); }
-    to { transform: scale(1.08); }
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes floatIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 2px rgba(26,107,107,0.4); }
-    50% { box-shadow: 0 0 0 5px rgba(26,107,107,0.15); }
-  }
-  @keyframes scrollPulse {
-    0% { transform: scaleY(0); transform-origin: top; }
-    50% { transform: scaleY(1); transform-origin: top; }
-    51% { transform: scaleY(1); transform-origin: bottom; }
-    100% { transform: scaleY(0); transform-origin: bottom; }
-  }
-</style>
-
-<script define:vars={{ regions, tourTypes, allPackages }}>
-  const input = document.getElementById('hero-search-input');
-  const suggestions = document.getElementById('suggestions');
-  const sugDestinations = document.getElementById('sug-destinations');
-  const sugTypes = document.getElementById('sug-types');
-  const durationSelect = document.getElementById('hero-duration-select');
-  const budgetSelect = document.getElementById('hero-budget-select');
-  const searchBtn = document.getElementById('hero-search-btn');
-  const tabs = document.querySelectorAll('.stab');
-
-  let activeTab = 'all';
-
-  // Tab switching
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      activeTab = tab.dataset.tab;
-    });
-  });
-
-  // Suggestions
-  input.addEventListener('input', () => {
-    const q = input.value.toLowerCase().trim();
-    if (!q) { suggestions.hidden = true; return; }
-
-    const matchDest = regions.filter(r => r.toLowerCase().includes(q));
-    const matchType = tourTypes.filter(t => t.toLowerCase().includes(q));
-
-    if (!matchDest.length && !matchType.length) { suggestions.hidden = true; return; }
-
-    sugDestinations.innerHTML = '<p class="sug-label">Destinations</p>';
-    matchDest.slice(0, 5).forEach(r => {
-      const btn = document.createElement('button');
-      btn.className = 'sug-item';
-      btn.textContent = r;
-      btn.addEventListener('click', () => { input.value = r; suggestions.hidden = true; });
-      sugDestinations.appendChild(btn);
-    });
-
-    sugTypes.innerHTML = '<p class="sug-label">Tour Types</p>';
-    matchType.slice(0, 4).forEach(t => {
-      const btn = document.createElement('button');
-      btn.className = 'sug-item';
-      btn.textContent = t;
-      btn.addEventListener('click', () => { input.value = t; suggestions.hidden = true; });
-      sugTypes.appendChild(btn);
-    });
-
-    suggestions.hidden = false;
-  });
-
-  document.addEventListener('click', e => {
-    if (!document.getElementById('hero-search-card').contains(e.target)) {
-      suggestions.hidden = true;
-    }
-  });
-
-  // Quick tags pre-fill search
-  document.querySelectorAll('.qt').forEach(qt => {
-    qt.addEventListener('click', () => {
-      input.value = qt.dataset.type;
-      suggestions.hidden = true;
-    });
-  });
-
-  // Navigate to packages page with params
-  function buildSearchURL() {
-    const q = input.value.trim();
-    const duration = durationSelect.value;
-    const budget = budgetSelect.value;
-    const params = new URLSearchParams();
-    if (q) params.set('q', q);
-    if (duration) params.set('duration', duration);
-    if (budget) params.set('budget', budget);
-    if (activeTab !== 'all') params.set('type', activeTab);
-    const base = activeTab === 'domestic' ? '/domestic' : activeTab === 'international' ? '/international' : '/packages';
-    return `${base}${params.toString() ? '?' + params.toString() : ''}`;
-  }
-
-  searchBtn.addEventListener('click', () => {
-    window.location.href = buildSearchURL();
-  });
-
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { suggestions.hidden = true; window.location.href = buildSearchURL(); }
-  });
 </script>

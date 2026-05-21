@@ -1,10 +1,10 @@
 ---
-import { siteConfig } from '../config/site';
+import { siteConfig } from '@config/site'; 
 const year = new Date().getFullYear();
 ---
 
 <footer class="bg-ink text-white">
-  <!-- Main Footer -->
+  <!-- Main Footer Grid -->
   <div class="container mx-auto px-6 py-20">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
 
@@ -16,14 +16,19 @@ const year = new Date().getFullYear();
         <p class="text-white/50 mt-4 text-sm leading-relaxed max-w-xs">
           {siteConfig.brand.description}
         </p>
-        <!-- Social Links -->
+        
+        <!-- Social Media Links -->
         <div class="flex gap-4 mt-8">
-          <a href={siteConfig.contact.facebook} class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all text-xs font-bold">
-            FB
-          </a>
-          <a href={siteConfig.contact.instagram} class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all text-xs font-bold">
-            IG
-          </a>
+          {siteConfig.contact.facebook && (
+            <a href={siteConfig.contact.facebook} target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all text-xs font-bold">
+              FB
+            </a>
+          )}
+          {siteConfig.contact.instagram && (
+            <a href={siteConfig.contact.instagram} target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all text-xs font-bold">
+              IG
+            </a>
+          )}
         </div>
       </div>
 
@@ -36,11 +41,11 @@ const year = new Date().getFullYear();
               {link.label}
             </a>
           ))}
-          <a href="/packages" class="text-white/60 hover:text-white text-sm transition-colors">ALL PACKAGES</a>
+          <a href="/packages" class="text-white/60 hover:text-white text-sm transition-colors uppercase">All Packages</a>
         </div>
       </div>
 
-      <!-- Contact Info -->
+      <!-- Contact Information -->
       <div>
         <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-6">Get in Touch</p>
         <div class="flex flex-col gap-4">
@@ -66,16 +71,24 @@ const year = new Date().getFullYear();
     </div>
   </div>
 
-  <!-- Bottom Bar -->
+  <!-- Bottom Accreditation Bar -->
   <div class="border-t border-white/5">
     <div class="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-white/20 text-xs">
         &copy; {year} {siteConfig.brand.name} {siteConfig.brand.suffix}. All rights reserved.
       </p>
+      
+      <!-- Accreditation badges are conditionally rendered based on site.js config settings -->
       <div class="flex gap-6">
-        <span class="text-white/20 text-xs">DOT Accredited</span>
-        <span class="text-white/20 text-xs">PTAA Member</span>
-        <span class="text-white/20 text-xs">IATA</span>
+        {siteConfig.accreditations?.dotLicensed && (
+          <span class="text-white/25 hover:text-white/50 text-xs transition-colors cursor-help" title="Department of Tourism Licensed Agency">DOT Accredited</span>
+        )}
+        {siteConfig.accreditations?.ptaaMember && (
+          <span class="text-white/25 hover:text-white/50 text-xs transition-colors cursor-help" title="Philippine Travel Agencies Association Member">PTAA Member</span>
+        )}
+        {siteConfig.accreditations?.iataAccredited && (
+          <span class="text-white/25 hover:text-white/50 text-xs transition-colors cursor-help" title="International Air Transport Association Accredited">IATA Accredited</span>
+        )}
       </div>
     </div>
   </div>
