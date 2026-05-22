@@ -9,60 +9,92 @@ interface Props {
     days: number;
     inclusions: string[];
     image_url: string;
+    max_pax?: number;
+    tour_type?: string;
   }
 }
 
 const { pkg } = Astro.props;
 ---
 
-<!-- Fixed height and flexible card structure [2] -->
-<div class="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-border flex flex-col h-full">
-  <!-- Image Container -->
+<div class="group bg-white rounded-3xl overflow-hidden border border-border flex flex-col h-full hover:shadow-2xl hover:shadow-teal/5 transition-all duration-500 hover:-translate-y-1.5 relative">
+  
+  <!-- Curated Cover Image with PAX Badge -->
   <a href={`/packages/${pkg.id}`} class="relative aspect-[4/3] overflow-hidden block flex-shrink-0">
     <img 
       src={pkg.image_url} 
       alt={pkg.title}
-      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+      class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
     />
-    <div class="absolute top-4 left-4 bg-teal-pale/90 backdrop-blur-md text-teal px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-teal/20">
-      {pkg.region}
+    <!-- Framer-Inspired Pax Capacity Overlay -->
+    <div class="absolute top-4 left-4 bg-white/80 backdrop-blur-md border border-white/40 text-ink text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full flex items-center gap-1.5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+      Max {pkg.max_pax || 20} Guests
     </div>
   </a>
 
-  <!-- Content Stretch Wrapper [2] -->
+  <!-- Content Stretch Wrapper -->
   <div class="p-6 flex-1 flex flex-col justify-between">
-    <div>
-      <h3 class="text-2xl font-serif text-ink mb-2 group-hover:text-teal transition-colors">
+    <div class="space-y-3">
+      {pkg.tour_type && (
+        <span class="text-[9px] font-bold text-teal bg-teal-pale border border-teal/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">{pkg.tour_type}</span>
+      )}
+      
+      <!-- Destination Tagging -->
+      <div class="flex items-center gap-1 text-[10px] uppercase tracking-wider text-ink-muted/60 font-semibold leading-none">
+        <span class="text-teal text-xs">📍</span> {pkg.region}
+      </div>
+
+      <h3 class="font-serif text-2xl text-ink font-semibold group-hover:text-teal transition-colors duration-300">
         {pkg.title}
       </h3>
-      
-      <!-- Inclusions / Metadata -->
-      <div class="flex flex-wrap gap-2 mb-6">
-        <span class="text-xs font-mono text-ink-muted bg-sand px-2 py-1 rounded">
-          {pkg.days} DAYS
-        </span>
-        {pkg.inclusions.slice(0, 3).map((item) => (
-          <span class="text-[10px] font-sans text-ink-muted uppercase tracking-tighter border border-border px-2 py-1 rounded">
-            {item}
-          </span>
-        ))}
-        {pkg.inclusions.length > 3 && (
-          <span class="text-[10px] font-sans text-ink-muted px-2 py-1">+{pkg.inclusions.length - 3} more</span>
-        )}
-      </div>
     </div>
 
-    <!-- Pinned Footer Action blocks [2] -->
-    <div class="pt-4 border-t border-border mt-6">
-      <div class="flex items-center justify-between mb-4">
+    <!-- Dual Column Metadata Grid with Inline Icons -->
+    <div class="border-t border-border pt-5 mt-6 space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        
+        {/* Cost per Person */}
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-sand flex items-center justify-center text-teal flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-[9px] uppercase tracking-widest text-ink-muted/50 leading-none mb-0.5">Rate</p>
+            <p class="text-xs font-mono font-bold text-ink leading-tight">₱{pkg.price.toLocaleString()} / Guest</p>
+          </div>
+        </div>
+
+        {/* Duration */}
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-sand flex items-center justify-center text-teal flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-[9px] uppercase tracking-widest text-ink-muted/50 leading-none mb-0.5">Duration</p>
+            <p class="text-xs font-mono font-bold text-ink leading-tight">{pkg.days} Day Trip</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Footer with Pinned Alignment -->
+      <div class="flex items-center justify-between pt-4 border-t border-sand/40">
         <div>
-          <p class="text-[10px] text-ink-muted uppercase tracking-widest leading-none mb-1">Starting from</p>
-          <p class="text-xl font-mono text-teal font-bold">₱{pkg.price.toLocaleString()}</p>
+          <p class="text-[9px] uppercase tracking-widest text-ink-muted/40 mb-0.5">Starting from</p>
+          <p class="font-mono text-xl font-bold text-teal">₱{pkg.price.toLocaleString()}</p>
         </div>
         <InquireButton client:visible pkgId={pkg.id} pkgTitle={pkg.title} />
       </div>
+
       <a href={`/packages/${pkg.id}`}
-        class="block w-full text-center border border-border hover:border-teal text-ink-muted hover:text-teal font-bold py-3 rounded-xl transition-all text-xs tracking-widest uppercase">
+        class="block w-full text-center border border-border hover:border-teal rounded-2xl text-ink hover:text-teal font-bold py-3.5 transition-all text-xs tracking-wider uppercase mt-3">
         View Details
       </a>
     </div>

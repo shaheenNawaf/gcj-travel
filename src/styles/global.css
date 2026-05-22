@@ -31,9 +31,15 @@
   --color-sand: #f5f0e8;
   --color-border: #e2ddd7;
 
-  --font-serif: "Cormorant Garamond", serif;
+  /* Standard Fonts: Updated from Cormorant Garamond to Playfair Display */
+  --font-serif: "Playfair Display", serif;
   --font-sans: "DM Sans", sans-serif;
   --font-mono: "DM Mono", monospace;
+}
+
+/* Custom premium text shadow overlay for readability on dynamic backgrounds */
+.text-shadow-premium {
+  text-shadow: 0 4px 18px rgba(13, 17, 23, 0.45);
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -117,11 +123,22 @@
   box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
 }
 
-/* Micro-interactions & subtle image gallery hover glow overlays */
+/* Micro-interactions & shadow gallery overlaps */
 .gallery-item {
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 .gallery-item:hover {
   box-shadow: 0 10px 25px rgba(26, 107, 107, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Custom subtle micro-interactions & image scales */
+
+.animate-hover {
+  transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-hover:hover {
+  box-shadow: 0 20px 48px rgba(13, 17, 23, 0.05);
   transform: translateY(-2px);
 }

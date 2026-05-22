@@ -14,6 +14,18 @@ if (error) console.error('Supabase Error:', error);
 const featured = packages?.filter(p => p.is_featured) ?? [];
 const allPackages = packages ?? [];
 
+// Extract dynamic cover images from the database
+const dbImages = allPackages.map(p => p.image_url).filter(Boolean);
+
+// High-quality Unsplash fallbacks
+const fallbackImages = [
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2400", // Beach
+  "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=2400", // Lagoon
+  "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=2400"  // Landscape
+];
+
+const heroSlideshowImages = dbImages.length > 0 ? dbImages : fallbackImages;
+
 const regions = [...new Set(allPackages.map(p => p.region).filter(Boolean))];
 const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))];
 ---
@@ -21,26 +33,30 @@ const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))
 <PublicLayout title="Follow Your Heartbeat">
   <main>
     <!-- Centered Editorial Hero Block -->
-    <section class="relative h-screen min-h-[680px] flex items-center justify-center overflow-hidden">
-      <div class="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=2400"
-          alt="Palawan Paradise"
-          class="w-full h-full object-cover animate-kb"
-        />
-        <div class="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/55 to-ink/30"></div>
+    <!-- Centered Editorial Hero Block -->
+    <section class="relative h-screen min-h-[640px] flex items-center justify-center overflow-hidden">
+      <!-- Interactive Slideshow Container -->
+      <div class="absolute inset-0 z-0" id="hero-slideshow-container">
+        <!-- Slides are dynamically generated and cross-faded here -->
       </div>
+      
+      <!-- Modern Scrim Overlay -->
+      <div class="absolute inset-0 z-0 bg-gradient-to-b from-ink/90 via-transparent to-ink"></div>
 
-      <div class="relative z-10 w-full max-w-5xl mx-auto px-6 pt-20 flex flex-col items-center text-center space-y-10">
+      <div class="relative z-10 w-full max-w-5xl mx-auto px-6 pt-20 flex flex-col items-center text-center space-y-12">
         <div class="space-y-4">
-          <h1 class="font-serif text-6xl md:text-8xl text-white font-light leading-none animate-slide text-center select-none">
-            {siteConfig.brand.tagline.split(' ')[0]}<br/>
-            <em class="font-normal italic text-white/75">{siteConfig.brand.tagline.split(' ').slice(1).join(' ')}</em>
+          <!-- 
+            REFACTORED: 
+            Accreditations tag & subtitle paragraph deleted. 
+            Title is now a clean, bolder, single-line headline using 
+            Playfair Display serif with an overlay shadow utility. [1]
+          -->
+          <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-medium animate-slide text-center select-none text-shadow-premium leading-tight tracking-tight">
+            Escape to <em class="font-normal italic text-white/90">Paradise</em>
           </h1>
-          <p class="text-white/65 text-lg animate-slide max-w-lg mx-auto">{siteConfig.brand.description}</p>
         </div>
 
-        <!-- Centered & Expanded Search Card with Wider Input Area [1] -->
+        <!-- Centered Search Card with Custom Proportions -->
         <div class="w-full bg-white/95 backdrop-blur-lg rounded-2xl overflow-hidden shadow-2xl animate-slide border border-border mx-auto" id="hero-search-card">
           <div class="flex border-b border-border px-5 bg-sand/35">
             <button class="stab py-4 px-5 text-xs font-bold tracking-wider text-teal border-b-2 border-teal transition-all cursor-pointer uppercase" data-tab="all">All</button>
@@ -51,7 +67,7 @@ const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))
           <div class="grid grid-cols-1 md:grid-cols-[1.8fr_1fr_1fr_1fr] items-stretch">
             <div class="relative flex items-center gap-2.5 py-4 px-6 border-r border-border bg-white">
               <span class="text-base">🔍</span>
-              <input id="hero-search-input" type="text" placeholder="Where to?" autocomplete="off" class="w-full text-sm text-ink outline-none bg-transparent" />
+              <input id="hero-search-input" type="text" placeholder="Where do you want to go?" autocomplete="off" class="w-full text-sm text-ink outline-none bg-transparent" />
               <div class="absolute top-[calc(100%+4px)] left-0 right-0 bg-white rounded-xl shadow-xl border border-border z-50 overflow-hidden" id="suggestions" hidden>
                 <div id="sug-destinations"></div>
                 <div id="sug-types"></div>
@@ -86,7 +102,7 @@ const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))
           </div>
         </div>
 
-        <!-- destinations inlined next to Popular label [3] -->
+        <!-- Inlined popular tags next to labels -->
         <div class="flex items-center justify-center gap-2 flex-wrap text-xs animate-slide">
           <span class="text-white/50 tracking-wider">Popular:</span>
           {[
@@ -94,36 +110,36 @@ const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))
             { label: 'Siargao, Surigao', val: 'Siargao' },
             { label: 'Bohol, Visayas', val: 'Bohol' },
             { label: 'Beach & Island', val: 'Beach & Island' },
-            { label: 'Adventure', val: 'Adventure' }
+            { label: 'Adventure Escapes', val: 'Adventure' }
           ].map(t => (
             <button class="qt bg-white/12 hover:bg-teal/50 hover:border-teal border border-white/20 text-white font-semibold py-1 px-3.5 rounded-full cursor-pointer transition-all duration-200" data-type={t.val}>{t.label}</button>
           ))}
         </div>
+
+        <!-- Iconic Framer Customer Trust Avatars Block -->
+        <!-- <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-5 py-3 rounded-full border border-white/15 text-white text-xs animate-slide">
+          <div class="flex -space-x-2">
+            <img class="w-7 h-7 rounded-full border-2 border-teal object-cover" src="https://framerusercontent.com/images/NuDDJBMV98oQ0UooLsHgyANg.png" alt="" />
+            <img class="w-7 h-7 rounded-full border-2 border-teal object-cover" src="https://framerusercontent.com/images/z8MWWJ3Dyo9pD5XVXdOMssWsF4.png" alt="" />
+            <img class="w-7 h-7 rounded-full border-2 border-teal object-cover" src="https://framerusercontent.com/images/TMMlrSVX3hqTvJXpR5Quv2hwKJ8.png" alt="" />
+          </div>
+          <p class="font-medium tracking-wide">10+ Verified Travel Specialist Guides to Assist You</p>
+        </div> -->
+
       </div>
 
-      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 text-[10px] uppercase tracking-widest">
+      <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 text-[10px] uppercase tracking-widest">
         <span>Scroll to explore</span>
-        <div class="w-px h-10 bg-gradient-to-b from-white/40 to-transparent scroll-bar-pulse"></div>
+        <div class="w-px h-5 bg-gradient-to-b from-white/40 to-transparent scroll-bar-pulse"></div>
       </div>
     </section>
 
-    <div id="search-metadata" data-regions={JSON.stringify(regions)} data-tourtypes={JSON.stringify(tourTypes)} hidden></div>
-
-    <div class="bg-ink flex justify-center items-center py-5 px-6 flex-wrap">
-      <div class="flex flex-col items-center px-10">
-        <span class="font-mono text-xl text-teal font-bold">{allPackages.length}+</span>
-        <span class="text-[10px] text-white/35 uppercase tracking-wider">Active Packages</span>
-      </div>
-      <div class="w-px h-8 bg-white/8"></div>
-      <div class="flex flex-col items-center px-10">
-        <span class="font-mono text-xl text-teal font-bold">{regions.length}+</span>
-        <span class="text-[10px] text-white/35 uppercase tracking-wider">Destinations</span>
-      </div>
-      <div class="w-px h-8 bg-white/8"></div>
-      <div class="flex flex-col items-center px-10">
-        <span class="font-mono text-xl text-teal font-bold">24h</span>
-        <span class="text-[10px] text-white/35 uppercase tracking-wider">Response Time</span>
-      </div>
+    <!-- Hidden metadata bridge to compiled script below -->
+    <div id="search-metadata" 
+         data-regions={JSON.stringify(regions)} 
+         data-tourtypes={JSON.stringify(tourTypes)} 
+         data-slideshow={JSON.stringify(heroSlideshowImages)} 
+         hidden>
     </div>
 
     <!-- Featured packages catalog -->
@@ -144,10 +160,102 @@ const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))
       </div>
     </section>
 
+    <!-- Journey Solutions & Specialty Services -->
+    <section class="py-24 bg-white border-t border-border">
+      <div class="max-w-6xl mx-auto px-6 space-y-16">
+        <div class="text-center max-w-xl mx-auto space-y-3">
+          <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal">Boutique Specialty</p>
+          <h2 class="font-serif text-5xl text-ink font-light leading-tight">Journey Solutions</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">
+            We handle the end-to-end planning and custom bookings for your holiday. Our certified specialists ensure a completely smooth experience.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { 
+              img: 'https://framerusercontent.com/images/pyhj5Ifd2SEmV02rkNsX1YwSg.png', 
+              title: 'Honeymoon Planning', 
+              desc: 'Let us take care of your honeymoon planning and custom luxury requests, so you can focus entirely on enjoying your escape together.' 
+            },
+            { 
+              img: 'https://framerusercontent.com/images/SLQUmE3NhHzEJ5qqGOLyeodhReo.png', 
+              title: 'Cultural Heritage Tours', 
+              desc: 'Immerse yourself in native traditions, historical architectures, and curated local guides that breathe life into every destination.' 
+            },
+            { 
+              img: 'https://framerusercontent.com/images/J67o6ELj2iHdl0g8FXfRJ656r9U.png?scale-down-to=512', 
+              title: 'Safe Harbor Passports', 
+              desc: 'We arrange accredited transfers, medical seaport access clearances, and verified hotel health protocols for worry-free transit.' 
+            }
+          ].map(s => (
+            <div class="bg-surface border border-border rounded-3xl p-8 space-y-6 hover:shadow-2xl hover:shadow-teal/5 transition-all duration-300 hover:-translate-y-1">
+              <div class="aspect-[16/10] rounded-2xl overflow-hidden bg-sand">
+                <img src={s.img} alt={s.title} class="w-full h-full object-cover" />
+              </div>
+              <div class="space-y-2">
+                <h3 class="font-serif text-2xl text-ink font-semibold">{s.title}</h3>
+                <p class="text-xs text-ink-muted leading-relaxed">{s.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Exclusive Deals & Dynamic Discount Banners -->
+    <section class="py-24 bg-sand/30 border-t border-b border-border">
+      <div class="max-w-6xl mx-auto px-6 space-y-12">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+          <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal">Travely Specials</p>
+          <h2 class="font-serif text-5xl text-ink font-light">Deals & Discounts</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">
+            Unlock exclusive rewards on our curated travel packages. From early-bird vouchers to couples incentives, we have you covered.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            { 
+              discount: '30% Off', 
+              title: 'Previous Travelers reward', 
+              desc: 'Enjoy a 30% loyalty discount on exclusive travel packages if you have booked with GCJ before.', 
+              color: 'border-teal bg-teal-pale text-teal' 
+            },
+            { 
+              discount: '24% Off', 
+              title: 'Group Traveler savings', 
+              desc: 'Plan a family reunion or getaway with friends and take advantage of our 24% off group flight incentives.', 
+              color: 'border-coral-dark/20 bg-amber-50 text-coral-dark' 
+            },
+            { 
+              discount: '25% Off', 
+              title: 'Couple’s Escape voucher', 
+              desc: 'Book a luxury romantic package for two and apply an automatic 25% discount off premium resorts.', 
+              color: 'border-gold/30 bg-yellow-50/50 text-gold' 
+            }
+          ].map(d => (
+            <div class="bg-white border border-border rounded-3xl p-8 flex flex-col justify-between space-y-6 hover:shadow-lg transition-all duration-300">
+              <div class="space-y-4">
+                <span class={`inline-block text-xs font-mono font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border ${d.color}`}>
+                  {d.discount}
+                </span>
+                <h4 class="font-serif text-2xl text-ink font-semibold leading-tight">{d.title}</h4>
+                <p class="text-xs text-ink-muted leading-relaxed">{d.desc}</p>
+              </div>
+              <a href="/contact" class="inline-block text-xs font-bold text-teal border-b-2 border-teal pb-0.5 w-max hover:text-teal-dark hover:border-teal-dark transition-colors">
+                Apply Code →
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
     <!-- Experience Category Grid -->
     <section class="py-24 bg-ink">
       <div class="max-w-6xl mx-auto px-6">
-        <div class="mb-12">
+        <div class="mb-12 text-center md:text-left">
           <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-2">Browse by Experience</p>
           <h2 class="font-serif text-5xl text-white font-light">What Kind of Trip Are You Planning?</h2>
         </div>
@@ -174,48 +282,20 @@ const tourTypes = [...new Set(allPackages.map(p => p.tour_type).filter(Boolean))
       </div>
     </section>
 
-    <!-- Why Choose Us Trust Section -->
-    <section class="py-24 bg-surface border-t border-border">
-      <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div class="space-y-6">
-          <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-teal">Why GCJ Travel?</p>
-          <h2 class="font-serif text-5xl text-ink font-light leading-tight">Journeys Crafted with Care</h2>
-          <p class="text-ink-muted text-base leading-relaxed">
-            We're not just another booking directory. GCJ Travel is a fully accredited agency with real specialists who know every destination personally. No hidden fees, no surprises — just honest, memorable travel.
-          </p>
-          <a href="/contact" class="inline-block bg-coral hover:bg-coral-dark text-white font-bold py-4 px-8 rounded-xl text-xs uppercase tracking-wider shadow-lg transition-transform hover:-translate-y-0.5">
-            Talk to a Specialist
-          </a>
-        </div>
-        
-        <div class="space-y-4">
-          {[
-            { icon: '🏅', title: 'IATA Accredited', desc: 'Internationally recognised certification for premium travel agents' },
-            { icon: '🇵🇭', title: 'DOT Licensed', desc: 'Department of Tourism accredited boutique agency' },
-            { icon: '🤝', title: 'PTAA Member', desc: 'Philippine Travel Agencies Association verified member' },
-            { icon: '📞', title: '24h Support', desc: 'Our dedicated operations desk responds within 24 hours' },
-          ].map(b => (
-            <div class="flex gap-4 p-5 bg-white border border-border rounded-2xl hover:shadow-lg transition-all duration-300">
-              <span class="text-3xl flex-shrink-0">{b.icon}</span>
-              <div>
-                <h4 class="font-sans text-sm font-bold text-ink mb-1">{b.title}</h4>
-                <p class="text-xs text-ink-muted leading-relaxed">{b.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
   </main>
 </PublicLayout>
 
 <script>
   import { initHomepageSearch } from '../lib/home_search.js';
+  import { initHeroSlideshow } from '../lib/hero_slideshow.js';
   
   const metaEl = document.getElementById('search-metadata');
   if (metaEl) {
     const regions = JSON.parse(metaEl.dataset.regions || '[]');
     const tourTypes = JSON.parse(metaEl.dataset.tourtypes || '[]');
+    const slideshowImages = JSON.parse(metaEl.dataset.slideshow || '[]');
+
     initHomepageSearch(regions, tourTypes);
+    initHeroSlideshow(slideshowImages);
   }
 </script>
