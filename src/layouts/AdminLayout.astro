@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { siteConfig } from '../config/site';
+import { siteConfig } from '@config/site';
 const { title = "Admin" } = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
@@ -10,7 +10,7 @@ const currentPath = Astro.url.pathname;
     <meta charset="utf-8" />
     <title>{title} | Editor's Desk</title>
     <meta name="viewport" content="width=device-width" />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&family=DM+Sans:wght@400;500;700&family=DM+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;700&family=DM+Mono&display=swap" rel="stylesheet">
   </head>
   <body class="margin-0 padding-0 overflow-hidden bg-[#fcfcfb]">
     <div class="admin-grid">
@@ -23,15 +23,21 @@ const currentPath = Astro.url.pathname;
         </div>
         
         <nav class="sidebar-nav">
-          <p class="px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-4">Management</p>
+          <p class="px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-4">Cockpit</p>
+          <a href="/admin/dashboard" class:list={["nav-link", { active: currentPath === '/admin/dashboard' }]}>
+            Command Center
+          </a>
+          
+          <p class="px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mt-6 mb-4">Management</p>
           <a href="/admin/inquiries" class:list={["nav-link", { active: currentPath === '/admin/inquiries' }]}>
-            Inquiries <span class="bg-teal text-[10px] px-2 py-0.5 rounded-full">New</span>
+            Inquiries <span class="bg-teal text-[10px] px-2 py-0.5 rounded-full font-mono">Leads</span>
           </a>
           <a href="/admin/packages" class:list={["nav-link", { active: currentPath.startsWith('/admin/packages') }]}>
             Tour Catalog
           </a>
-          <a href="/admin/media" class:list={["nav-link", { active: currentPath === '/admin/media' }]}>
-            Media Assets
+          <!-- Restricted: Tagged with superadmin-only class [1] -->
+          <a href="/admin/staff" class:list={["nav-link", "superadmin-only", { active: currentPath === '/admin/staff' }]}>
+            Staff & Access
           </a>
         </nav>
 
@@ -67,13 +73,47 @@ const currentPath = Astro.url.pathname;
 
     <script>
       import { supabase } from '../lib/supabase_client';
-      const checkUser = async () => {
+      import { ROLE_PERMISSIONS, ACTION_SELECTORS, isPageAllowed } from '@config/permissions.js';
+      
+      const checkUserAndRole = async () => {
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session && window.location.pathname !== '/admin/login') {
+        
+        // 1. Session Protection check
+        if (!session) {
+          if (window.location.pathname !== '/admin/login') {
             window.location.href = '/admin/login';
+          }
+          return;
         }
+
+        // 2. Read metadata role (default to agent if none exists)
+        const userRole = session.user.user_metadata?.role || 'agent';
+        const currentPath = window.location.pathname;
+
+        // 3. Dynamic Page Route Guard [1]
+        if (!isPageAllowed(userRole, currentPath)) {
+          console.warn(`Access Denied to ${currentPath} for role: ${userRole}. Redirecting to dashboard.`);
+          window.location.href = '/admin/dashboard';
+          return;
+        }
+
+        // 4. Dynamic Action Element Guard [1]
+        // Loop over all secure selectors. If the active role does not have the permission
+        // mapped to that selector, we automatically hide the elements.
+        Object.keys(ACTION_SELECTORS).forEach(permission => {
+          const roleActions = ROLE_PERMISSIONS[userRole]?.allowedActions || [];
+          const isAllowed = roleActions.includes(permission);
+
+          if (!isAllowed) {
+            document.querySelectorAll(ACTION_SELECTORS[permission]).forEach(el => {
+              el.classList.add('hidden');
+            });
+          }
+        });
       };
-      checkUser();
+
+      checkUserAndRole();
+
       document.getElementById('logout-btn')?.addEventListener('click', async () => {
         await supabase.auth.signOut();
         window.location.href = '/admin/login';

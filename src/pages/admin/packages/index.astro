@@ -40,7 +40,8 @@ const { data: packages } = await supabase
           <a href={`/admin/packages/edit/${pkg.id}`} class="bg-surface hover:bg-teal hover:text-white border border-border hover:border-teal py-2.5 px-4 rounded-xl text-xs font-bold text-ink transition-all">
             Edit
           </a>
-          <button class="bg-surface hover:bg-red-50 hover:text-red-600 border border-border hover:border-red-200 py-2.5 px-4 rounded-xl text-xs font-bold text-ink-muted hover:border-red-200 cursor-pointer delete transition-all" data-id={pkg.id} data-title={pkg.title}>
+          <!-- Protected Action: Only Super Admins can see/interact [1] -->
+          <button class="bg-surface hover:bg-red-50 hover:text-red-600 border border-border hover:border-red-200 py-2.5 px-4 rounded-xl text-xs font-bold text-ink-muted hover:border-red-200 cursor-pointer delete superadmin-only transition-all" data-id={pkg.id} data-title={pkg.title}>
             Delete
           </button>
         </div>
