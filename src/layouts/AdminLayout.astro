@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { siteConfig } from '@config/site';
+import { ROLE_PERMISSIONS, ACTION_SELECTORS, isPageAllowed } from '../config/permissions';
 const { title = "Admin" } = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
@@ -105,7 +106,10 @@ const currentPath = Astro.url.pathname;
           const isAllowed = roleActions.includes(permission);
 
           if (!isAllowed) {
-            document.querySelectorAll(ACTION_SELECTORS[permission]).forEach(el => {
+            // Added type assertion: "as keyof typeof ACTION_SELECTORS"
+            const selector = ACTION_SELECTORS[permission as keyof typeof ACTION_SELECTORS];
+            
+            document.querySelectorAll(selector).forEach(el => {
               el.classList.add('hidden');
             });
           }
